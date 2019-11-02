@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>fastlane的简介和安装 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="fastlane简介fastlane是一款开源的ruby脚本工具，用于app进行自动化测试、打包、提交、发布的一体化服务，支持iOS和Android">
+<meta name="keywords" content="ruby">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fastlane的简介和安装">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;fastlane-installation&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="fastlane简介fastlane是一款开源的ruby脚本工具，用于app进行自动化测试、打包、提交、发布的一体化服务，支持iOS和Android">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.915Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-fastlane-installation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/fastlane-installation/" class="article-date">
+  <time datetime="2017-05-04T02:10:10.000Z" itemprop="datePublished">2017-05-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      fastlane的简介和安装
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="fastlane简介"><a href="#fastlane简介" class="headerlink" title="fastlane简介"></a>fastlane简介</h2><p>fastlane是一款开源的ruby脚本工具，用于app进行自动化测试、打包、提交、发布的一体化服务，支持iOS和Android</p>
+<a id="more"></a>
+
+<h2 id="fastlane的优势体验在哪"><a href="#fastlane的优势体验在哪" class="headerlink" title="fastlane的优势体验在哪"></a>fastlane的优势体验在哪</h2><p>以前打包iOS的app需要Xcode，提交app需要打开浏览器进入iTunes Connect，如今fastlane使用命令行就能搞定一切，而且效率翻倍，因为省去了加载iTunes Connect网页必须的js和css等元素。除此之外fastlane还可以：</p>
+<ul>
+<li>自动生成证书和provisioning profile</li>
+<li>app快照截取</li>
+<li>TestFlight或蒲公英等其他测试平台的集成</li>
+<li>Jenkins整合</li>
+<li>自定义和整合以上工作流（即命令行中输入一行命令搞定一切）</li>
+<li>使用命令行进行苹果开发者中心和iTunes Connect的常用操作（比如查看和修改app状态，添加测试者和开发设备等）</li>
+<li>更多特性详见<a href="https://github.com/fastlane/fastlane" target="_blank" rel="noopener">官方github地址</a></li>
+</ul>
+<p>以下这段摘要来自<a href="https://krausefx.com/blog/fastlane-has-saved-over-1-million-developer-hours" target="_blank" rel="noopener">Felix Krause博客</a></p>
+<blockquote>
+<p>在过去的8个月里，fastlane为全球开发者节省了100万个小时，相当于114年。（该博客发布于2016年4月）</p>
+</blockquote>
+<p>有趣的是，他们还做了一个叫做<a href="https://fastlane.github.io/fasttrack/" target="_blank" rel="noopener">fasttrack</a>的网页app来查看fastlane的实时使用情况，当有人启动fastlane服务的时候，就会从屏幕下方发射一个小火箭（其实是小方块）</p>
+<h2 id="官方安装流程"><a href="#官方安装流程" class="headerlink" title="官方安装流程"></a>官方安装流程</h2><p><strong>如果你还没有安装过fastlane，建议直接跳至下面的：新安装流程</strong></p>
+<p>按照官方的安装步骤就可以进行安装，但是当我第一次上手以后，就踩了不少坑，具体问题如下：</p>
+<ul>
+<li>因为图方便，在Github的fastlane首页里下载了zip包，然后解压安装</li>
+<li>使用<code>fastlane init</code>以后出错，显示为<code>undefined method edit_version for nil:NilClass</code>等一系列提示，然后将生成的fastlane文件夹又给删除了；上网查找原因后得知官方已经修复该问题，需要至少2.28.1版本的支持，<a href="https://github.com/fastlane/fastlane/pull/8930" target="_blank" rel="noopener">相关网址</a></li>
+<li>于是我去升级fastlane，使用Rubygems的途径能获得指定版本，升级后发现在命令行中的fastlane竟然还是老版本？！于是上网查找原因后，得知通过不同的安装途径会得到多个fastlane的版本安装在了不同的位置，结果系统始终默认使用的是我通过zip包安装的版本，所以即使通过Rubygems升级，得到的新版本也会被自动忽视，于是解决方案是：首先删除通过zip包安装的fastlane，然后使用fastlane的话，系统就默认为后者了，<a href="https://github.com/fastlane/fastlane/issues/6284" target="_blank" rel="noopener">相关网址</a></li>
+<li>通过fastlane进行sigh操作来管理pp文件的时候，出错提示<code>Connection reset by peer - SSL_connect</code>，官方解释说系统的ruby为2.0.0版本太低，升级后就好了。结果使用brew升级后发现命令行里还是老版本ruby，所以需要将系统版的ruby替换为brew版本的ruby，方法在新安装流程中介绍。<a href="https://github.com/fastlane/fastlane/issues/6553" target="_blank" rel="noopener">相关网址</a></li>
+</ul>
+<h2 id="新-∙-安装流程"><a href="#新-∙-安装流程" class="headerlink" title="新 ∙ 安装流程"></a>新 ∙ 安装流程</h2><p>踩了坑以后，我还是总结一个新的安装流程：</p>
+<ol>
+<li>首先安装最新的ruby，然后替换掉mac系统的旧版本ruby</li>
+<li>统一通过一种途径进行fastlane的安装和升级，且安装版本不低于2.28.1（目前最新是2.28.7）</li>
+</ol>
+<h3 id="安装Ruby"><a href="#安装Ruby" class="headerlink" title="安装Ruby"></a>安装Ruby</h3><p>首先打开terminal，查看下默认的Ruby的版本和路径，如果版本大于2.3.1的话，应该不成问题。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">which ruby # 如果是/usr/bin/ruby，应该就是系统默认的ruby路径（即系统自带版本）</span><br><span class="line">ruby -v # 如果是2.0.0说明版本过低，不适合fastlane</span><br></pre></td></tr></table></figure>
+
+<p>我选择通过brew进行Ruby的安装和openssl的更新，在命令行中输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew upgrade openssl</span><br><span class="line">brew install ruby</span><br></pre></td></tr></table></figure>
+
+<p>安装后，需要将Ruby链接至brew</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew link ruby</span><br></pre></td></tr></table></figure>
+
+<p>这样就能在terminal中使用homebrew安装的ruby，当然也能通过<code>brew unlink ruby</code>来重置该行为，link以后再看看<code>which ruby</code>和<code>ruby -v</code>是否有所变化，如果没有变化，就关掉terminal，即终止该进程，重新开启新的terminal窗口再次检查看看。我的ruby新版本是2.4.1p111</p>
+<h3 id="安装fastlane"><a href="#安装fastlane" class="headerlink" title="安装fastlane"></a>安装fastlane</h3><p>在macOS平台上，官方提供了三个途径进行安装：</p>
+<ul>
+<li>homebrew: <code>brew cask install fastlane</code></li>
+<li><a href="https://download.fastlane.tools/" target="_blank" rel="noopener">下载安装包</a>（不建议）</li>
+<li>Rubygems: <code>sudo gem install fastlane -NV</code></li>
+</ul>
+<p>接下来是三选一。我这里使用了Rubygems的途径，并且将之前选择了其他途径安装的fastlane，一律删除。注意如果安装了fastlane以后才升级的Ruby，那么Ruby升级成功后，依然需要重新安装fastlane</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gem install fastlane -NV</span><br></pre></td></tr></table></figure>
+
+<p>至此，安装搞定，之后可以看官方文档和其他教程了。但愿该文章有助于新手避免踩坑，或者向已踩过坑的开发者分享一些解决方案。Raywenderlich的这篇<a href="https://www.raywenderlich.com/136168/fastlane-tutorial-getting-started-2" target="_blank" rel="noopener">fastlane Tutorial</a>文章已经是个很不错的入门指导，文章里覆盖了使用fastlane的基本特性：</p>
+<ul>
+<li>初始化</li>
+<li>证书管理</li>
+<li>fastlane目录结构</li>
+<li>app信息管理</li>
+<li>快照截取</li>
+<li>打包</li>
+<li>上传iTunes Connect</li>
+<li>提交审核</li>
+</ul>
+<h2 id="其他遇到的问题"><a href="#其他遇到的问题" class="headerlink" title="其他遇到的问题"></a>其他遇到的问题</h2><h3 id="修改本地化语言和分类"><a href="#修改本地化语言和分类" class="headerlink" title="修改本地化语言和分类"></a>修改本地化语言和分类</h3><p>比如我们的app只支持中文，或者分类中填写游戏，以及游戏中的分类、审核评级信息（比如年龄12+，带轻微惊悚、色情等），<a href="https://github.com/fastlane/fastlane/blob/master/deliver/Reference.md" target="_blank" rel="noopener">这里已经总结了列表</a>，可以配合tutorial的教程使用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/fastlane-installation/" data-id="ck2hbe6w1000yz1jbd9el8nwi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/fastlane-signing/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          fastlane证书和签名
+        
+      </div>
+    </a>
+  
+  
+    <a href="/contentOffset/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">contentOffset和bounds.origin的区别</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

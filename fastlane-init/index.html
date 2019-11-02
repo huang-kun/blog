@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>fastlane初始化 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="fastlane的初始化需要依赖一个项目，首先进入terminal，将路径设置到自己项目的主目录中，然后调用fastlane init，接着命令行会向你索取苹果开发者的id，输入后即可自动被写入fastlane的配置中，顺利的话，最终在项目主目录下生成一个名为fastlane的文件夹。">
+<meta name="keywords" content="ruby">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fastlane初始化">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;fastlane-init&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="fastlane的初始化需要依赖一个项目，首先进入terminal，将路径设置到自己项目的主目录中，然后调用fastlane init，接着命令行会向你索取苹果开发者的id，输入后即可自动被写入fastlane的配置中，顺利的话，最终在项目主目录下生成一个名为fastlane的文件夹。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="https:&#x2F;&#x2F;docs.fastlane.tools&#x2F;img&#x2F;getting-started&#x2F;ios&#x2F;fastlane-init.png">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.914Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;docs.fastlane.tools&#x2F;img&#x2F;getting-started&#x2F;ios&#x2F;fastlane-init.png">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-fastlane-init" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/fastlane-init/" class="article-date">
+  <time datetime="2017-05-05T02:23:50.000Z" itemprop="datePublished">2017-05-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      fastlane初始化
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>fastlane的初始化需要依赖一个项目，首先进入<code>terminal</code>，将路径设置到自己项目的主目录中，然后调用<code>fastlane init</code>，接着命令行会向你索取苹果开发者的id，输入后即可自动被写入fastlane的配置中，顺利的话，最终在项目主目录下生成一个名为<code>fastlane</code>的文件夹。</p>
+<a id="more"></a>
+
+<p><img src="https://docs.fastlane.tools/img/getting-started/ios/fastlane-init.png" alt="fastlane文件目录"></p>
+<p>进去后，发现里面存在一些文件：</p>
+<ul>
+<li>Appfile</li>
+<li>Deliverfile</li>
+<li>Fastfile</li>
+<li>metadata（文件夹）</li>
+<li>screenshots（文件夹）</li>
+</ul>
+<p>前面三个是默认的配置文件，其中<code>Appfile</code>存放着项目的<code>app_identifier</code>, <code>apple_id</code>, <code>team_id</code>等基本信息</p>
+<p><code>Deliverfile</code>是fastlane执行<code>fastlane deliver</code>命令时需要的配置参数文件，主要是用于上传<code>iTunes Connect</code>的一些基本配置</p>
+<h3 id="Fastfile"><a href="#Fastfile" class="headerlink" title="Fastfile"></a>Fastfile</h3><p><code>Fastfile</code>是使用<code>fastlane</code>命令的配置文件，也是创建自动化工作流的地方，里面的参数有：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"># 是否允许自动升级fastlane</span><br><span class="line"># update_fastlane</span><br><span class="line"></span><br><span class="line"># 这里是fastlane对于本项目的最低支持版本，通常在fastlane init的时候就指定成了当前版本</span><br><span class="line">fastlane_version &quot;2.28.7&quot;</span><br><span class="line"></span><br><span class="line"># 部署平台</span><br><span class="line">default_platform :ios</span><br><span class="line"></span><br><span class="line"># 工作流</span><br><span class="line">platform :ios do</span><br><span class="line"></span><br><span class="line">  before_all do</span><br><span class="line">    # 这里是执行工作流之前执行的代码，可以在此运行个脚本或服务之类的</span><br><span class="line">  end</span><br><span class="line">  </span><br><span class="line">  # 这里是自定义任务（称为lane），比如app打包</span><br><span class="line">  desc &quot;Generate an IPA file&quot; # 任务说明</span><br><span class="line">  lane :build do</span><br><span class="line">    increment_build_number # 自动增加项目build号，需要Xcode额外配置</span><br><span class="line">    gym # 打包命令</span><br><span class="line">  end</span><br><span class="line">  </span><br><span class="line">  # 这里可以根据需要，添加许多lane</span><br><span class="line">  # ...</span><br><span class="line">  </span><br><span class="line">  after_all do |lane|</span><br><span class="line">    # 当执行一个lane结束，如果成功，就会执行到这里</span><br><span class="line">  end</span><br><span class="line"></span><br><span class="line">  error do |lane, exception|</span><br><span class="line">    # 当执行一个lane结束，如果失败，就会执行到这里</span><br><span class="line">  end</span><br><span class="line">  </span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>比如我构建一个名叫demo的lane，就可以添加在里面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">desc &quot;lane test&quot;</span><br><span class="line">lane :demo do</span><br><span class="line">  puts &quot;hello world&quot;</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>保存后，执行<code>fastlane demo</code>，会呈现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[21:31:26]: -------------------------------------------------</span><br><span class="line">[21:31:26]: --- Step: Verifying required fastlane version ---</span><br><span class="line">[21:31:26]: -------------------------------------------------</span><br><span class="line">[21:31:26]: Your fastlane version 2.28.8 matches the minimum requirement of 2.28.7  ✅</span><br><span class="line">[21:31:26]: ------------------------------</span><br><span class="line">[21:31:26]: --- Step: default_platform ---</span><br><span class="line">[21:31:26]: ------------------------------</span><br><span class="line">[21:31:26]: Driving the lane &apos;ios demo&apos; 🚀</span><br><span class="line">[21:31:26]: hello world</span><br><span class="line"></span><br><span class="line">+------+---------------------+-------------+</span><br><span class="line">|             fastlane summary             |</span><br><span class="line">+------+---------------------+-------------+</span><br><span class="line">| Step | Action              | Time (in s) |</span><br><span class="line">+------+---------------------+-------------+</span><br><span class="line">| 1    | Verifying required  | 0           |</span><br><span class="line">|      | fastlane version    |             |</span><br><span class="line">| 2    | default_platform    | 0           |</span><br><span class="line">+------+---------------------+-------------+</span><br><span class="line"></span><br><span class="line">[21:31:26]: fastlane.tools finished successfully 🎉</span><br></pre></td></tr></table></figure>
+
+<h3 id="metadata"><a href="#metadata" class="headerlink" title="metadata"></a>metadata</h3><p>这里是储存和管理项目元数据信息的文件夹，比如包含了项目的：</p>
+<ul>
+<li>图标 (AppIcon.png)</li>
+<li>版权 (copyright.txt)</li>
+<li>本地化信息 (en-US, zh-Hans)，包括更新说明、商店搜索关键字、相关网站等</li>
+<li>分类信息 (比如游戏类、即时战略游戏等)</li>
+<li>审核信息等</li>
+</ul>
+<h3 id="screenshots"><a href="#screenshots" class="headerlink" title="screenshots"></a>screenshots</h3><p>这里用来储存app在商店中展示的所有截图，里面包含了：</p>
+<ul>
+<li>README.txt</li>
+<li>screenshots.html（可能没有）</li>
+<li>本地化文件夹，即不同语言文件夹会存放自己相应的所有截图</li>
+</ul>
+<p>其中<code>screenshots.html</code>是截图预览的本地网页文件，双击以后可以直接查看所有设备截图的预览，十分方便。</p>
+<p>而<code>README.txt</code>里的说明也很给力，即所有的截图可以随便命名，因为只要图片本身的像素尺寸准确无误，那么该图片就会自动分类到相应的设备中去。比如该图片尺寸为750x1334，那么就可以自动归位至iPhone 6或7的4.7英寸设备屏幕中。这样就满足了即使不使用fastlane自带的截图生成服务，依然可以直接把设计师做好的截图直接拿过来用，并且避免了图片命名和手动上传截图的枯燥工作。（附：来自PaintCode官方的<a href="https://www.paintcodeapp.com/news/ultimate-guide-to-iphone-resolutions" target="_blank" rel="noopener">iPhone分辨率终极指南</a>）</p>
+<h3 id="其他说明"><a href="#其他说明" class="headerlink" title="其他说明"></a>其他说明</h3><h4 id="在新老项目中分别使用fastlane"><a href="#在新老项目中分别使用fastlane" class="headerlink" title="在新老项目中分别使用fastlane"></a>在新老项目中分别使用fastlane</h4><p>如果从Xcode新建一个工程，然后<code>fastlane init</code>，那么初始化的时候，fastlane也会顺便在iTunes Connect中生成相应的app，并且在两边都设置好初始的信息。</p>
+<p>如果在老项目中<code>fastlane init</code>，并且在iTunes Connect已经提交给这个app的话，那么fastlane会自动获取它的图标、所有提交的描述信息，以及所有截图全部下载到fastlane文件夹中，以保持同步。</p>
+<h4 id="初始化出错"><a href="#初始化出错" class="headerlink" title="初始化出错"></a>初始化出错</h4><p>如果执行<code>fastlane init</code>过程中出现异常，那么fastlane会自动删除原本生成的fastlane文件夹，然后将metadata和screenshots文件夹直接放在项目的主目录下，所以除了项目目录中多了两个文件夹以外，基本什么也没有发生过。至于出错的原因，很可能是大环境问题，建议更新ruby和fastlane版本，在我写的fastlane安装博客中正好遇上了不少坑，有可能会帮助到你。</p>
+<h4 id="目录问题"><a href="#目录问题" class="headerlink" title="目录问题"></a>目录问题</h4><p>在<a href="https://docs.fastlane.tools/advanced/#directory-behavior" target="_blank" rel="noopener">官方文档</a>中，关于目录有以下明确的解释：</p>
+<blockquote>
+<p>Notice how every action and every plugin’s code runs in the root of the project, while all user code from the Fastfile runs inside the ./fastlane directory. </p>
+</blockquote>
+<p>我翻译成贴切的用语是：</p>
+<ol>
+<li><strong>在项目主目录下运行各种lane就好，不要在<code>./fastlane</code>的目录下运行它们</strong></li>
+<li>在配置文件或者路径的时候（比如Gymfile），记住是从主目录去调用的，确保使用的文件路径正确</li>
+</ol>
+<p>如果当你遇到以下情况：</p>
+<ol>
+<li>通过<code>terminal</code>cd到项目主目录下，运行<code>fastlane xxx</code></li>
+<li>需要修改Fastfile，接着cd到fastlane目录下进行文件修改和保存</li>
+<li>然后为了测试修改效果，又要返回到主目录下，再运行fastlane</li>
+<li>反复切换目录，WTF…</li>
+</ol>
+<p>这么做虽然正确，但是操作太过于繁琐。有个解决方法是：在<code>terminal</code>中开启两个tab，其中一个tab专门定为到<code>./fastlane</code>目录，用来修改<code>Fastfile</code>以及各种file；另一个tab专门定为在主目录，进行各种<code>fastlane</code>命令。只需要切换tab就好了。</p>
+<h4 id="通过Fastfile运行shell或脚本"><a href="#通过Fastfile运行shell或脚本" class="headerlink" title="通过Fastfile运行shell或脚本"></a>通过Fastfile运行shell或脚本</h4><p>如果在项目的主目录下有个名为<code>hello.txt</code>文件，那么使用命令行打开该文件的话，可以<code>cd</code>到项目路径，然后<code>open hello.txt</code>，当然该操作可以放在Fastfile中，通过<code>sh &quot;...&quot;</code>的格式来执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lane :hello do</span><br><span class="line">  sh &quot;open hello.txt&quot; ## 出错：No such file or directory</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>这样设置<code>Fastfile</code>之后会发现，无论在项目主目录下还是在fastlane目录下运行<code>fastlane hello</code>，都会出现<code>No such file or directory</code>的错误。执行<code>lane</code>的时候目录都会默认在<code>./fastlane</code>，该目录下是不存在<code>hello.txt</code>文件的。既然如此，就可以修改命令为<code>sh &quot;open ../hello.txt&quot;</code>即可生效；或者将<code>hello.txt</code>文件转移至<code>./fastlane</code>目录下，进行<code>sh &quot;open hello.txt&quot;</code>也可以生效。</p>
+<p>同样，在lane中运行自己写的脚本也是如此，比如<code>sh &quot;my_script.sh&quot;</code>，关键确保脚本的位置和lane中设置的位置正确，才可以顺利运行。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/fastlane-init/" data-id="ck2hbe6vy000uz1jbdvu88uws" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/fastlane-plugin/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          fastlane插件
+        
+      </div>
+    </a>
+  
+  
+    <a href="/fastlane-signing/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">fastlane证书和签名</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

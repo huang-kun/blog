@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>视差滑动 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这里介绍下什么是视差滑动Parallax Scrolling，以及如何将视差滑动的概念与UIScrollView相结合。">
+<meta name="keywords" content="UIScrollView,Parallax Scrolling">
+<meta property="og:type" content="article">
+<meta property="og:title" content="视差滑动">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;Parallax-Scrolling&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="这里介绍下什么是视差滑动Parallax Scrolling，以及如何将视差滑动的概念与UIScrollView相结合。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="https:&#x2F;&#x2F;upload.wikimedia.org&#x2F;wikipedia&#x2F;commons&#x2F;3&#x2F;34&#x2F;Parallax_scrolling_example_scene.gif">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;Parallax-Scrolling&#x2F;video3.gif">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;Parallax-Scrolling&#x2F;video1.gif">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;Parallax-Scrolling&#x2F;video2.gif">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.698Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;upload.wikimedia.org&#x2F;wikipedia&#x2F;commons&#x2F;3&#x2F;34&#x2F;Parallax_scrolling_example_scene.gif">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Parallax-Scrolling" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/Parallax-Scrolling/" class="article-date">
+  <time datetime="2017-01-28T03:34:47.000Z" itemprop="datePublished">2017-01-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      视差滑动
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这里介绍下什么是视差滑动<code>Parallax Scrolling</code>，以及如何将视差滑动的概念与<code>UIScrollView</code>相结合。</p>
+<a id="more"></a>
+
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>根据<a href="https://en.wikipedia.org/wiki/Parallax_scrolling" target="_blank" rel="noopener">维基百科</a>的介绍，对于<code>视差</code>的定义如下：</p>
+<blockquote>
+<p>Parallax scrolling is a technique in computer graphics and web design, where background images move by the camera slower than foreground images, creating an illusion of depth in a 2D scene and adding to the immersion.</p>
+</blockquote>
+<p>我个人理解为是在滑动过程中，让背景图片移动速度慢于前景图片移动速度，从而在2D的层面上构建出在前后分层中加入距离感的效果。比方下面这个动画：</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/3/34/Parallax_scrolling_example_scene.gif" alt="Parallax Sample"></p>
+<h2 id="网站作品赏析"><a href="#网站作品赏析" class="headerlink" title="网站作品赏析"></a>网站作品赏析</h2><p>该技术早先就使用在了游戏中，而如今一些web和app也使用视差效果来提升用户体验。比如这些网站：</p>
+<ul>
+<li>平移进出：随着滑动的深入，新的元素和内容通过平移的动画，进入用户的视野。例如<ul>
+<li><a href="http://myriad.space" target="_blank" rel="noopener">myriad</a></li>
+</ul>
+</li>
+<li>立体风景：将风景分割成不同的层级，随着滑动的深入，每个层级都以不同的速率（有的快，有的慢）做出相同方向上的平移，来体现视角的移动。例如<ul>
+<li><a href="http://www.firewatchgame.com" target="_blank" rel="noopener">FireWatch</a></li>
+<li><a href="http://gardenestudio.com.br/index.php" target="_blank" rel="noopener">Garden Studio</a></li>
+</ul>
+</li>
+<li>故事叙述：增加了故事叙述的视觉体验，好过静态的图文排版。例如<ul>
+<li><a href="http://www.nytimes.com/projects/2013/tomato-can-blues/" target="_blank" rel="noopener">New York Times: Tomato Can Blues</a></li>
+<li><a href="http://jessandruss.us" target="_blank" rel="noopener">Jess &amp; Russ</a></li>
+</ul>
+</li>
+<li>会动的漫画：<ul>
+<li><a href="http://graphicnovel-hybrid4.peugeot.com/start.html" target="_blank" rel="noopener">Peugeot Hybrid4</a></li>
+<li><a href="http://www.cabletv.com/the-walking-dead" target="_blank" rel="noopener">Walking Dead</a></li>
+</ul>
+</li>
+</ul>
+<p>甚至<a href="https://github.com/iminyourhouse-turnaround" target="_blank" rel="noopener">Github404请求失败</a>页面也是这样，当你将鼠标在背景画面中移动时，就可以看到不同分层的平移效果。</p>
+<h2 id="iOS开源作品"><a href="#iOS开源作品" class="headerlink" title="iOS开源作品"></a>iOS开源作品</h2><h4 id="MJParallaxCollectionView"><a href="#MJParallaxCollectionView" class="headerlink" title="MJParallaxCollectionView"></a>MJParallaxCollectionView</h4><img src="/Parallax-Scrolling/video3.gif" class="" title="This is an example image">
+
+<p>该项目将视差滑动与<code>UICollectionView</code>相结合，方法如下：</p>
+<ul>
+<li>让<code>UICollectionViewCell</code>的子类包含一个<code>UIImageView</code>，负责展示图片</li>
+<li>外层的<code>UICollectionView</code>即为背景<code>UIScrollView</code>，在它上下滑动的时候，同时将平移的距离按比例来平移<code>UIImageView</code></li>
+</ul>
+<p>通过让图片在<code>UICollectionView</code>移动的基础上进行再次平移，实现了前景速度快于背景速度。这里是<code>MJParallaxCollectionView</code>的<a href="https://github.com/mayuur/MJParallaxCollectionView" target="_blank" rel="noopener">Github地址</a>，以及作者实现demo的博客<a href="https://oleb.net/blog/2014/05/parallax-scrolling-collectionview/" target="_blank" rel="noopener">Parallax Scrolling</a>。</p>
+<h4 id="AFTPhotoScroller"><a href="#AFTPhotoScroller" class="headerlink" title="AFTPhotoScroller"></a>AFTPhotoScroller</h4><p>在iOS 10的照片app中，左右翻页的时候，可以看见照片左右边缘的内容进出效果。虽然不清楚官方是如何实现的，但是我实现了自己的版本，效果图如下：</p>
+<img src="/Parallax-Scrolling/video1.gif" class="" title="This is an example image">
+
+<p>实现原理：在翻页的<code>UIScrollView</code>对象上面加上一个<code>UIView</code>对象作为照片之间的间隙栏，然后：</p>
+<ol>
+<li>给它们设置相同的背景色</li>
+<li>在翻页时候，让上层的<code>UIView</code>移动速率略快于<code>UIScrollView</code></li>
+</ol>
+<img src="/Parallax-Scrolling/video2.gif" class="" title="This is an example image">
+
+<p>在分析清楚原理过后，我将视差滑动效果引入到自己开源的<code>AFTPhotoScroller</code>中，这里是<a href="https://github.com/huang-kun/AFTPhotoScroller" target="_blank" rel="noopener">Github地址</a>，以及<a href="https://github.com/huang-kun/AFTPhotoScroller/blob/master/README_CN.md" target="_blank" rel="noopener">中文介绍</a>。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/Parallax-Scrolling/" data-id="ck2hbe6vj0009z1jb9bf95ntg" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/contentOffset/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          contentOffset和bounds.origin的区别
+        
+      </div>
+    </a>
+  
+  
+    <a href="/paging-scroll/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">照片app的翻页浏览</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

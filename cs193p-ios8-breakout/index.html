@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>斯坦福CS193p作业之打砖块 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Resource:  Stanford cs193p 2015 winner (iOS 8)Assignment: Breakout(打砖块)资源：vojtamolda&#x2F;cs193p （这是别人的源码，我自己写的已经不维护了） 作业要求 运用UIDynamicAnimator创建Breakout游戏，但是不要一模一样地模仿示例UI 当击中砖块的时候，需要执行一些动画，比如砖块在消失之前进行翻转或者">
+<meta name="keywords" content="ios,cs193p,swift">
+<meta property="og:type" content="article">
+<meta property="og:title" content="斯坦福CS193p作业之打砖块">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-breakout&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="Resource:  Stanford cs193p 2015 winner (iOS 8)Assignment: Breakout(打砖块)资源：vojtamolda&#x2F;cs193p （这是别人的源码，我自己写的已经不维护了） 作业要求 运用UIDynamicAnimator创建Breakout游戏，但是不要一模一样地模仿示例UI 当击中砖块的时候，需要执行一些动画，比如砖块在消失之前进行翻转或者">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-breakout&#x2F;breakout.png">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.895Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-breakout&#x2F;breakout.png">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-cs193p-ios8-breakout" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/cs193p-ios8-breakout/" class="article-date">
+  <time datetime="2015-03-16T10:52:29.000Z" itemprop="datePublished">2015-03-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      斯坦福CS193p作业之打砖块
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Resource:  Stanford cs193p 2015 winner (iOS 8)<br>Assignment: Breakout(打砖块)<br>资源：<a href="https://github.com/vojtamolda/cs193p" target="_blank" rel="noopener">vojtamolda/cs193p</a> （这是别人的源码，我自己写的已经不维护了）</p>
+<h2 id="作业要求"><a href="#作业要求" class="headerlink" title="作业要求"></a>作业要求</h2><ol>
+<li>运用UIDynamicAnimator创建Breakout游戏，但是不要一模一样地模仿示例UI</li>
+<li>当击中砖块的时候，需要执行一些动画，比如砖块在消失之前进行翻转或者变了颜色，主要是练习UIView的animation</li>
+<li>添加一个pan手势用来控制板子，还需要支持tap手势，在随机的位置发球</li>
+<li>当游戏结束时候，弹出一个alert，并且重设游戏</li>
+<li>你的游戏需要设计至少4个不同的变量来控制游戏的细节，比如砖块数量、弹力、球的数量、带有特殊行为的砖块等</li>
+<li>使用一个tabBarController，添加一个tab，目的是让用户来设置游戏至少4个变量的具体信息，设置完毕后，游戏应该立即作出反应。</li>
+<li>在这个实现设置功能的MVC中至少使用以下之一：UISwitch, UISegmentedControl, UIStepper/UISlider</li>
+<li>你的游戏参数配置必须在app运行期间持续存在</li>
+<li>同时支持iPhone和iPad</li>
+</ol>
+<a id="more"></a>
+
+<img src="/cs193p-ios8-breakout/breakout.png" class="">
+
+<p>个别提示：</p>
+<ol>
+<li>该游戏是基于UIView级别的游戏，游戏中各项元素都可以通过UIView即可创建。</li>
+<li>该游戏通过建立一个breakoutBehavior即可连接所有元素的碰撞，不需要想的过于复杂。</li>
+</ol>
+<p>注意：如果在添加一些view作为UIDynamicItem的时候，该view必须首先是animator的referenceView的subview，也就是说gameView在一开始就作为referenceView，那么在game中其他要实现各种物理效果的view，首先要加入到gameView的视图层级当中，然后才可以dynamicBehavior.addItem(view)，否则运行会crash</p>
+<h4 id="根据提示，全部参与UICollisionBehavior的物体有：砖块、球、板子、墙壁。当球与板子发生碰撞的时候，只有球会反弹，而板子只会响应pan手势的操作，怎么去实现？"><a href="#根据提示，全部参与UICollisionBehavior的物体有：砖块、球、板子、墙壁。当球与板子发生碰撞的时候，只有球会反弹，而板子只会响应pan手势的操作，怎么去实现？" class="headerlink" title="根据提示，全部参与UICollisionBehavior的物体有：砖块、球、板子、墙壁。当球与板子发生碰撞的时候，只有球会反弹，而板子只会响应pan手势的操作，怎么去实现？"></a>根据提示，全部参与UICollisionBehavior的物体有：砖块、球、板子、墙壁。当球与板子发生碰撞的时候，只有球会反弹，而板子只会响应pan手势的操作，怎么去实现？</h4><p>建议：首先把gameView的边缘（除了底边）作为boundary，然后给球一个collisionBehavior，这样球可以在gameView中碰撞；但是板子是否作为collisionBehavior其中的一员呢？不可以的，因为一个view在加上UIDynamicBehavior之后就会直接显示物理效果，如果之后用强制行为改变view的属性，比如用手按住拖拽来改变其位置的话，就会造成冲突（view不知道要听谁的），所以作业中的建议是：将板子和砖块的边框都设成boundary，这样就够了！所以在用手拖动板子左右移动的时候，也就是删除旧的boundary并且添加新的boundary的过程。在球碰到砖块的时候，通过UICollisionBehaviorDelegate找到碰撞结束的时刻，在这里移除砖块的Boundary，顺便从屏幕中移除砖块。</p>
+<h4 id="如何个性化制定碰撞砖块的效果？"><a href="#如何个性化制定碰撞砖块的效果？" class="headerlink" title="如何个性化制定碰撞砖块的效果？"></a>如何个性化制定碰撞砖块的效果？</h4><p>建议：可以通过UIView的animationWithDuration的方法来展现砖块view的消失动画，不过这里的个性化是指比如说某些特殊砖块与其他砖块颜色不同，你无法一次性就把它撞掉，而是首次撞击后他的颜色有特殊变为普通颜色，然后再次撞击就可以撞掉。那么在创建的时候不是直接创建UIView作为砖块，而是子类化UIView成为一个带有isSpecial属性的BrickView，然后制定特殊的砖块带有特殊的颜色，接着在碰撞结束的时刻，判断这个砖块是否为特殊砖块，如果不是就可以直接消失了，如果是的话就把他重新标记为普通砖块并更改颜色。</p>
+<h4 id="游戏的墙壁只有左右上三个墙壁，不含底部，怎么做？"><a href="#游戏的墙壁只有左右上三个墙壁，不含底部，怎么做？" class="headerlink" title="游戏的墙壁只有左右上三个墙壁，不含底部，怎么做？"></a>游戏的墙壁只有左右上三个墙壁，不含底部，怎么做？</h4><p>建议：首先collision的mode属性是boundaries，然后translatesReferenceBoundsIntoBoundary属性设为false或者不用理会他，如果true的话gameView的四个边就都成了墙壁了。接下来就用addBoundaryWithIdentifier(fromPoint:toPoint)的方法由点到点的添加gameView的左上右三条边（我不清楚为什么使用addBoundaryWithIdentifier(forPath)却没有效果）。</p>
+<h4 id="如何实现在游戏开始后，点击屏幕给球一个瞬时推力？"><a href="#如何实现在游戏开始后，点击屏幕给球一个瞬时推力？" class="headerlink" title="如何实现在游戏开始后，点击屏幕给球一个瞬时推力？"></a>如何实现在游戏开始后，点击屏幕给球一个瞬时推力？</h4><p>建议：通过UIPushBehavior(items: balls, mode: .Instantaneous)创建一个瞬时推力，建议推力的力度别太大，然后通过pushDirection给推力设定一个方向（这里的CGVector的dx正数表示向右，dy正数表示向下）。需要注意的是，因为该推力只是用于游戏开始的发球过程，之后其实并不不要保留，因此用后即焚就好了，在push.action的block语句块中进行自我删除，但是在push.action中引用push自身会造成引用循环，所以需要设置unowned关键字（如果在使用[unowned push] in 的语法过程中收到编译器的警告，可以采用原始的unowned let方法）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">func pushBalls(balls: [UIView]) &#123;</span><br><span class="line">    let push = UIPushBehavior(items: balls, mode: .Instantaneous)</span><br><span class="line">    push.magnitude = ...</span><br><span class="line">    push.pushDirection = ...</span><br><span class="line">    unowned let unownedPush = push!</span><br><span class="line">    push.action = &#123;</span><br><span class="line">        unownedPush.dynamicAnimator!.removeBehavior(unownedPush)</span><br><span class="line">    &#125;</span><br><span class="line">    dynamicAnimator?.addBehavior(push)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="如何判断球没被接住而掉落出屏幕底部的情况呢？"><a href="#如何判断球没被接住而掉落出屏幕底部的情况呢？" class="headerlink" title="如何判断球没被接住而掉落出屏幕底部的情况呢？"></a>如何判断球没被接住而掉落出屏幕底部的情况呢？</h4><p>建议：这里就是ball.center如果不在gameView.bounds中的情况，说明球马上要跑出屏幕之外了（如果ball的速度超快的话貌似也能无视墙壁飞出去哦），但如何第一时间能收到该信息呢？方法是UIDynamicBehavior的action属性，调用在物理行为发生的每一步中，但是同样需要注意引用循环的问题。比如breakoutBehavior是GameViewController的一个属性，那么self就持有breakoutBehavior的引用，如果在breakoutBehavior.action的block语句块中如果有self的话，就会因为捕获self而使得breakoutBehavior持有对self的引用，因此breakoutBehavior与self会相互指向对方而永远留在heap中无法被清除。同样在breakoutBehavior.action中也会捕获breakoutBehavior自身，出现的话也需要注意！我顺便也想吐个槽：为什么使用objective c的话，编译器就能发现针对block引用循环的潜在问题而及时给警告，而换了swift就没有呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// 下面的代码中，使用self.balls表示游戏可以存在有两个或以上的球</span><br><span class="line">// 想问下有没有类似于同时进行 [unowned self], [unowned breakoutBehavior] in 的既合法又简便的写法？</span><br><span class="line">unowned let unownedBreakoutBehavior = breakoutBehavior</span><br><span class="line">breakoutBehavior.action = &#123; [unowned self] in</span><br><span class="line">    // game over</span><br><span class="line">    var i: Int?</span><br><span class="line">    for (index, ball) in enumerate(self.balls) &#123;</span><br><span class="line">        if !self.gameView.bounds.contains(ball.center) &#123;</span><br><span class="line">            unownedBreakoutBehavior.removeBehaviorsFromElement(ball)</span><br><span class="line">            ball.removeFromSuperview()</span><br><span class="line">            i = index</span><br><span class="line">            break</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if i != nil &#123; self.balls.removeAtIndex(i!) &#125;</span><br><span class="line">    if self.balls.count == 0 &#123; self.clearGame() &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="为什么截图中是一个红色的方块，不是球状物？"><a href="#为什么截图中是一个红色的方块，不是球状物？" class="headerlink" title="为什么截图中是一个红色的方块，不是球状物？"></a>为什么截图中是一个红色的方块，不是球状物？</h4><p>原因：1.人懒 2. 虽然官方的打砖块游戏使用的是类似乒乓球的物体，但是我发现用方块会更有意思，在UIDynamicItemBehavior中有个allowsRotation的属性，如果设成true的话，对于乒乓球本身是无法显示效果的，但是对于方块来说，可以在游戏中看到一个带有高速自转能力的方块哦。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/cs193p-ios8-breakout/" data-id="ck2hbe6vo000ez1jb3gz56dq4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/swift/" rel="tag">swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/objc-dynamic1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Objective-C的动态机制
+        
+      </div>
+    </a>
+  
+  
+    <a href="/cs193p-ios8-smashtag/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">斯坦福CS193p作业之Smashtag</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

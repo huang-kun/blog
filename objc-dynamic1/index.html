@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Objective-C的动态机制 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="写一篇关于objc的动态机制的读书总结。">
+<meta name="keywords" content="dynamic">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Objective-C的动态机制">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;objc-dynamic1&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="写一篇关于objc的动态机制的读书总结。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.941Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-objc-dynamic1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/objc-dynamic1/" class="article-date">
+  <time datetime="2015-05-05T01:30:12.000Z" itemprop="datePublished">2015-05-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Objective-C的动态机制
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>写一篇关于objc的动态机制的读书总结。</p>
+<a id="more"></a>
+
+<p>objc的程序特点是<code>消息发送</code>，比如：</p>
+<p><code>[receiver message]</code></p>
+<ul>
+<li>receiver的具体类型会在运行时决定</li>
+<li>根据receiver的类型，决定具体调用哪个方法</li>
+</ul>
+<h2 id="Selector"><a href="#Selector" class="headerlink" title="Selector"></a>Selector</h2><p>Selector是一个代表类或实例方法的字符串。oc会通过selector在运行时获取正确的方法。Selector就好比C语言中指向函数的指针，但是他不会实际指向某个方法的实现，而是指向具有相同名称的方法的地址。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 后两个方法具有相同的selector</span><br><span class="line">- (void)greet;</span><br><span class="line">- (void)greet:(NSString *)to;</span><br><span class="line">- (void)greet:(int)times;</span><br></pre></td></tr></table></figure>
+
+<h2 id="SEL"><a href="#SEL" class="headerlink" title="SEL"></a>SEL</h2><p>这个selector类型能够在源码编译期间用一个独一无二的identifier取代这个selector的value</p>
+<p>使用<code>@selector()</code>在编译期间创建了一个selector变量<br><code>SEL sel = @selector(greet)</code></p>
+<p>也可以通过Foundation的<code>NSSelectorFromString()</code>方法，在运行期间创建一个selector<br><code>SET sel = NSSelectorFromString(@&quot;greet&quot;)</code></p>
+<p>通过Foundation的<code>NSStringFromSelector()</code>方法获取selector的字符串名称</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (void)greet:(NSString *)to &#123;</span><br><span class="line">    NSString *textString = NSStringFromSelector(_cmd);</span><br><span class="line">    NSLog(@&quot;%@&quot;, textString); // greet:</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中_cmd是隐式参数，代表被发送的消息中的selector，_cmd存在于每一个oc方法的实现中，只是没有对外声明而已。</p>
+<h2 id="方法签名"><a href="#方法签名" class="headerlink" title="方法签名"></a>方法签名</h2><p>方法签名定义了方法传入参数的数据类型以及返回结果的类型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SEL sel = @selector(getBytes: maxLength: usedLength: encoding: options: range: remainingRange:);</span><br><span class="line">NSMethodSignature *signature = [NSString instanceMethodSignatureForSelector: sel];</span><br><span class="line">// 在这里设置断点，然后在 (lldb) 执行 po signature</span><br><span class="line">NSLog(@&quot;%@&quot;, signature);</span><br></pre></td></tr></table></figure>
+
+<p>为什么需要方法签名呢？在动态运行系统实现对象接受消息的机制时，编译器实际上是将[receiver message]转换为（ANSI）C函数，而C函数的声明就需要函数的参数类型、返回类型。</p>
+<p>为了生成准确的运行代码，编译器既需要selector，又需要方法签名。但是由于传入方法的参数具体类型是在运行时决定的，那么编译器怎么能获取正确的签名呢？因此只有通过方法声明时所定义的参数类型进行猜测。</p>
+<p>比如Foo类中有个未公开的<code>private</code>方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (void)greet:(NSString *)to &#123;</span><br><span class="line">	NSLog(@“Hello, %@”, to);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Poo类中有个public方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)greet:(int)times;</span><br></pre></td></tr></table></figure>
+
+<p>然后在main.h中import这两个类，然后创建一个id对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">id receiver = [[Foo alloc] init];</span><br><span class="line">id person = @(12);</span><br><span class="line">[receiver greet: person]; // 编译警告：传入参数类型id与int不符！</span><br></pre></td></tr></table></figure>
+
+<p>在编译的期间，出现这样的警告说明编译器发现Poo类中存在名称为<code>greet:</code>的selector但是参数类型不匹配；但是运行以后，编译器却发现receiver是Foo类型，因此执行的是Foo的<code>greet:</code>，即使这是个私有的方法。</p>
+<p>方法签名也可以在运行时检查方法的参数和返回类型。下面的例子说明如何检查是否可以给Foo的实例发送带有NSString参数的greet:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Foo *foo = [[Foo alloc] init];</span><br><span class="line">NSString *name = [NSString stringWithFormat: @&quot;Jack&quot;];</span><br><span class="line">SEL sel = NSSelectorFromString(@&quot;greet:&quot;);</span><br><span class="line"></span><br><span class="line">NSMethodSignature *sig = [[foo class] instanceMethodSignatureForSelector: sel];</span><br><span class="line">// 如果sig不为nil，说明foo响应了sel</span><br><span class="line">if (sig) &#123;</span><br><span class="line">    // sig其实共有3个参数，头两个是被隐藏的: 0 is self, 1 is _cmd</span><br><span class="line">    // 所以传入greet:的参数应该从2开始算起</span><br><span class="line">    const char *firstType = [sig getArgumentTypeAtIndex:2];</span><br><span class="line">    const char *nsstrType = @encode(NSString *);</span><br><span class="line">    int length = MIN((int)strlen(firstType),(int)strlen(nsstrType));</span><br><span class="line">    // 比较两个C字符串，返回0说明相同</span><br><span class="line">    if (strncmp(firstType, nsstrType, length) == 0) &#123;</span><br><span class="line">        NSLog(@&quot;first argu type of greet: is NSString.&quot;);</span><br><span class="line">        [foo performSelector: sel withObject: name];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        NSLog(@&quot;actual type is %s\n&quot;, firstType);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="动态类型"><a href="#动态类型" class="headerlink" title="动态类型"></a>动态类型</h2><p>动态类型，即在运行期间才决定一个对象的具体类型。</p>
+<p>oc既支持静态类型，又支持动态类型。如果静态地定义一个对象的类型，那么在编译期间，编译器会根据你设置的类型，帮你检查一些潜在错误。</p>
+<p>使用静态类型以后，比如<code>Foo *foo</code>，如果Foo类型没有显式声明greet方法，当你调用<code>[foo greet]</code>的时候，编译器会在编译期间给你警告。</p>
+<p>使用动态类型以后，只有在运行期间，编译器才会判定receiver的类型从而做进一步处理，这样做的好处是：体现了程序的灵活性。比如在游戏中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)hitEnemy:(id &lt;mortal&gt;)enemy</span><br></pre></td></tr></table></figure>
+
+<p>那么在编译期间，编译器不会在乎这个敌人参数到底是吸血鬼类型，还是僵尸类型，只要被击中能损失生命值就可以。因此可以不需要说明具体的类型。</p>
+<h2 id="动态绑定"><a href="#动态绑定" class="headerlink" title="动态绑定"></a>动态绑定</h2><p>动态绑定，即在运行时候决定调用哪一个方法，而不是在编译的时候。</p>
+<p>继续上面的例子：比如游戏中每个敌人的死法不同，有的化成灰，有的变成烟。因此不同的敌人都实现了不同的<code>- (void)die</code>方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (void)hitEnemy:(id &lt;mortal&gt;)enemy &#123;</span><br><span class="line">	[enemy die];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么到了运行的时候，编译器会查看该敌人具体是僵尸还是吸血鬼，然后根据不同敌人的不同类型，最终决定敌人应该展现哪种死法。如果该敌人没有实现die的方法，编译器会继续查看他的父类，直到找到能响应的selector，否则会抛出异常。</p>
+<h2 id="动态方法实现"><a href="#动态方法实现" class="headerlink" title="动态方法实现"></a>动态方法实现</h2><p>可以通过@dynamic命令标记，告诉编译器，跟标记的属性相关的实现方法将会以动态形式提供。</p>
+<p>NSObject类包含了<code>resolveInstanceMethod:</code>和<code>resolveClassMethod:</code>方法，动态提供一个类或者对象指定的selector的方法实现（通过重载的方式），比如创建一个加菲猫类，再让他执行一个自己没有的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;objc/runtime.h&gt;</span><br><span class="line"></span><br><span class="line">void eatPizza(id self, SEL _cmd, id pizza)</span><br><span class="line">&#123;</span><br><span class="line">    NSLog(@&quot;I love %@&quot;, pizza);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@implementation Garfield</span><br><span class="line"></span><br><span class="line">// override</span><br><span class="line">+ (BOOL)resolveInstanceMethod:(SEL)sel</span><br><span class="line">&#123;</span><br><span class="line">    NSString *text = NSStringFromSelector(sel);</span><br><span class="line">    if ([text hasPrefix: @&quot;eatPizza”]) &#123;</span><br><span class="line">        if (class_addMethod([self class], sel, (IMP)eatPizza, &quot;@@:@&quot;)) &#123;</span><br><span class="line">            NSLog(@&quot;Great, pizza is my favourite.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        return YES;</span><br><span class="line">    &#125;</span><br><span class="line">    return [super resolveInstanceMethod: sel];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>加菲猫本身没有关于eatPizza:的实例方法。如果给加菲猫的实例发送带有eatPizza前缀的消息，那么会调用这里重载的方法，通过class_addMethod()给加菲猫类新建并添加一个eatPizza:的实例方法，并且提供一个eatPizzaImp()的函数做为该方法的实现方式。最后在main.m中进行测试：创建一个加菲猫的实例对象，再创建一个eatPizza:的selector，然后让加菲猫来执行这个selector</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SEL sel = NSSelectorFromString(@&quot;eatPizza:&quot;);</span><br><span class="line">Garfield *garfield = [[Garfield alloc] init];</span><br><span class="line">[garfield performSelector: sel withObject: @&quot;cheese pizza&quot;];</span><br><span class="line"></span><br><span class="line">// output:</span><br><span class="line">Great, pizza is my favourite.</span><br><span class="line">I love cheese pizza</span><br></pre></td></tr></table></figure>
+
+<p>这样就将创建的一个新的selector动态地生成一个新的实例方法，并且让一个实例来执行。</p>
+<h2 id="Bundle"><a href="#Bundle" class="headerlink" title="Bundle"></a>Bundle</h2><p>苹果的Bundle机制是用来支持动态加载，以延迟加载代码或资源（如图片、声音文件, plist）的方式，减少了过多占用内存的可能，从而提升系统性能。</p>
+<p>NSBundle可以用来管理这些bundles，它代表了文件系统中的一个位置，用来组织管理用于项目的代码或文件资源。<br>NSBundle还可以动态加载framework bundle，并且从该framework中创建一个实例<br>NSBundle *testBundle = [NSBundle bundleWithPath:@”/Test.bundle”];<br>id tester = [[[bundle classNamed:@”Tester”] alloc] init];</p>
+<h2 id="自省"><a href="#自省" class="headerlink" title="自省"></a>自省</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)isKindOfClass:(Class)aClass;</span><br><span class="line">- (BOOL)isMemberOfClass:(Class)aClass;</span><br><span class="line">- (BOOL)conformsToProtocol:(Protocol *)aProtocol;</span><br><span class="line">- (BOOL)respondsToSelector:(SEL)aSelector;</span><br><span class="line">- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector;</span><br></pre></td></tr></table></figure>
+
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>如果在编译期间出现<strong>PerformSelector may cause a leak because its selector is unknown</strong>的警告，如果没有找到匹配的方法，会造成潜在的leak，可以使用以下pragma消除警告</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#pragma clang diagnostic push</span><br><span class="line">#pragma clang diagnostic ignored &quot;-Warc-performSelector-leaks&quot;</span><br><span class="line">// [obj performSelector …]</span><br><span class="line">#pragma clang diagnostic pop</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li>Pro Objective-C</li>
+<li>Objective-C Runtime Programming Guide - Type Encodings</li>
+<li>NSMethodSignature class reference</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/objc-dynamic1/" data-id="ck2hbe6yf002rz1jba8pv4830" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/objc/" rel="tag">objc</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/touch-painter/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Touch Painter制作心得
+        
+      </div>
+    </a>
+  
+  
+    <a href="/cs193p-ios8-breakout/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">斯坦福CS193p作业之打砖块</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>成为一名git大师 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="我前段时间学习了Bitbucket（类似GitHub的git仓库托管服务）推出的Git Tutorials系列文章，收获很大。记得我在2016年初，由于忍受不了公司缓慢的网速导致使用svn进行项目代码同步时间太长，于是就劝说原单位的项目负责人使用git替代svn。当时我罗列了一堆git做为项目版本控制程序的优点，但是我还没有太多关于git的使用经验，只是基本命令的使用，并没有系统的学习。而看了一些">
+<meta property="og:type" content="article">
+<meta property="og:title" content="成为一名git大师">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;git-guru&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="我前段时间学习了Bitbucket（类似GitHub的git仓库托管服务）推出的Git Tutorials系列文章，收获很大。记得我在2016年初，由于忍受不了公司缓慢的网速导致使用svn进行项目代码同步时间太长，于是就劝说原单位的项目负责人使用git替代svn。当时我罗列了一堆git做为项目版本控制程序的优点，但是我还没有太多关于git的使用经验，只是基本命令的使用，并没有系统的学习。而看了一些">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.916Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-git-guru" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/git-guru/" class="article-date">
+  <time datetime="2018-11-22T07:19:41.000Z" itemprop="datePublished">2018-11-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      成为一名git大师
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我前段时间学习了Bitbucket（类似GitHub的git仓库托管服务）推出的<a href="https://www.atlassian.com/git/tutorials" target="_blank" rel="noopener">Git Tutorials</a>系列文章，收获很大。记得我在2016年初，由于忍受不了公司缓慢的网速导致使用svn进行项目代码同步时间太长，于是就劝说原单位的项目负责人使用git替代svn。当时我罗列了一堆git做为项目版本控制程序的优点，但是我还没有太多关于git的使用经验，只是基本命令的使用，并没有系统的学习。而看了一些专业的git书籍后，可能是由于内容繁多和深奥，我也没有坚持下来。如果能有一些简单上手的实际操作教程的话，或许能帮我提高git水平。<a href="https://www.atlassian.com/git/tutorials" target="_blank" rel="noopener">Git Tutorials</a>正好是一个图文并茂的教程，不仅能清晰明了地解释git工作原理，而且也给出了很多深入的操作技巧，引领初学者一步步成为一位git大师。</p>
+<p>这篇博客意在记录学习git的心得体会、思考，以及整理出一份<code>git进阶使用指南</code>。</p>
+<a id="more"></a>
+
+<h2 id="什么是git"><a href="#什么是git" class="headerlink" title="什么是git"></a>什么是git</h2><p>git是一种追踪文件改动的管理程序。起初是一位程序天才<code>Linus Torvalds</code>为了使用免费的版本管理软件来在社区上维护自己开发的<code>Linux</code>系统的更新迭代，自己花两周写了一个程序，到后来成了影响至今的git。</p>
+<h3 id="git和svn的区别"><a href="#git和svn的区别" class="headerlink" title="git和svn的区别"></a>git和svn的区别</h3><p>同样都是版本控制软件，在多人协作方面，svn采用的是<code>中心式</code>架构，即使用一台服务器提供数据存储服务，团队所有人需要从那里获取并提交开发进度，同步的过程对服务器和网络环境非常依赖。</p>
+<p>git采用去中心化的<code>分布式</code>架构，没有中央服务器的存在，团队中每个人都持有完整的项目拷贝，或者说每个人都可以扮演“服务器”的角色。所以对于分支的操作大多可以在本地进行，减轻了对网络的依赖（除非需要远程仓库），使得项目管理更加高效、轻量、灵活。</p>
+<h3 id="三大区域"><a href="#三大区域" class="headerlink" title="三大区域"></a>三大区域</h3><p>git仓库包含了3个重要的区域：</p>
+<ol>
+<li>工作区<code>working area</code>：追踪当下文件的改动</li>
+<li>缓冲区<code>staging area</code>：保存改动前，需要把改动添加到一个临时的暂存区域，可以理解为<code>buffer</code>，在此处的改动也可以随时撤销和更新</li>
+<li>提交历史区<code>commiting history</code>：通过保存快照的方式，记录每次改动而组成的历史时间线</li>
+</ol>
+<h2 id="分离状态"><a href="#分离状态" class="headerlink" title="分离状态"></a>分离状态</h2><p>git使用一个<code>HEAD</code>指针来指向当前工作中最新的位置，就好比时间隧道中的“现在”/“当下”/“此时此刻”这个时间节点。当然你也可以将它指向到之前的某个提交历史，就好比回到了“过去”某个时间节点，这是一种被称为<code>Detached HEAD</code>的指针分离的状态，意思是在该状态下的指针位置与当前项目开发的分支环境已经分离。通常发生在“回到过去”(<code>git checkout &lt;commit&gt;</code>)的时候。</p>
+<h2 id="回到过去"><a href="#回到过去" class="headerlink" title="回到过去"></a>回到过去</h2><p>这里是讲回到过去历史中的某个提交节点。通过命令<code>git checkout &lt;commit_id&gt;/&lt;tag_name&gt;</code>来实现。回到过去以后，当前的工作环境就恢复成了过去那个时刻的样子，而且并不会影响现在的环境。你可以随意的浏览、查看当时项目的状态，也可以进行改动，甚至在此基础上进行新的提交。</p>
+<p>需要注意的是，穿越到过去历史的行为会造成上面描述的分离状态<code>Detached HEAD</code>。在该状态下，虽然可以允许改动或提交，但是这些提交并不属于任何一个分支。所以即使做了改动，这些改动后的提交也是遗孤<code>Orphaned</code>，而且在通过指针操作回到现在/当下/最新进度的时候就正式被遗弃了，它们的命运就是等着被垃圾回收给清理掉，好像从来没有存在过一样（当然不会立即清理，默认保留30天左右）。如果想保留这些提交的话，就需要在回到过去的提交节点上建立一个新的分支来做为它们新的归属，自然就不会被遗弃了。</p>
+<p>穿越到了过去，做了该做的事，如何回到现在呢？通过命令<code>git checkout &lt;branch_name&gt;</code>即可回到某个分支当前的最新进度。</p>
+<h2 id="撤销改动"><a href="#撤销改动" class="headerlink" title="撤销改动"></a>撤销改动</h2><p>在正式提交前，对于文件中所做的改动“后悔”了怎么办？</p>
+<ul>
+<li>如果改动已经提到了缓冲区的话，就用<code>git reset &lt;file&gt;</code>把某个文件的改动撤回到工作区</li>
+<li>如果想撤销在工作区的改动，使用<code>git checkout -- &lt;file&gt;</code>撤销对某个文件的改动，即回到上次提交时候的状态<ul>
+<li>命令中使用了<code>--</code>是为了将后面的参数转义成文件名来处理，毕竟<code>checkout</code>命令也用于切换分支和历史回退，所以这样做能够避免歧义</li>
+</ul>
+</li>
+</ul>
+<p>如果改动提交以后，后悔了怎么办？提交的行为已经被记录成了历史节点，所以就只能“篡改”历史记录了。</p>
+<h2 id="修改历史"><a href="#修改历史" class="headerlink" title="修改历史"></a>修改历史</h2><h3 id="修改最后一次提交"><a href="#修改最后一次提交" class="headerlink" title="修改最后一次提交"></a>修改最后一次提交</h3><p>假设我做了以下提交：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add login.py</span><br><span class="line">git commit -m &apos;实现登录和注册&apos;</span><br></pre></td></tr></table></figure>
+
+<p>回车后，头脑一热，发现提交的文件改动和描述不符，我本来期望是这样的：</p>
+<ul>
+<li>期望A：提交<code>login.py</code>和<code>register.py</code>，然后描述成“实现登录和注册”</li>
+<li>期望B：只提交<code>login.py</code>，然后描述为“实现登录”</li>
+</ul>
+<p>但是提交以后，就已经成了历史记录，还有后悔药吗？就像很多电影里说得那样，People need second chance! 其实有个<code>--amend</code>参数就可以实现，它可以允许修改最后一次的历史提交。</p>
+<p>如果实现<code>期望A</code>的话，就需要向上次提交补充添加文件，但是不改变描述信息，方法是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add register.py</span><br><span class="line">git commit --amend --no-edit</span><br></pre></td></tr></table></figure>
+
+<p>如果实现<code>期望B</code>的话，就不需要补充任何文件，仅仅需要修改上次提交的描述信息就好了，方法是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit --amend -m &apos;实现登录&apos;</span><br></pre></td></tr></table></figure>
+
+<h3 id="倒退历史"><a href="#倒退历史" class="headerlink" title="倒退历史"></a>倒退历史</h3><p>使用<code>git reset &lt;commit_id&gt;</code>进行的撤销操作，会导致历史回退到之前的某个提交节点。和之前提到的“回到过去”不同的是，<code>checkout</code>只是移动HEAD指针指向某个历史提交位置，不会改变当前分支末端的位置，所以保留了分支里所有历史信息。而<code>reset</code>移动当前分支末端的位置到指定的提交位置，因此这里就成为历史最新的节点HEAD，该节点之后的所有提交就被“丢弃”了，结果就是该节点后所有的历史记录全部被清空（当然也不是立即被清空，git的垃圾回收会默认等待30天）。</p>
+<p><code>reset</code>命令有3个参数，会根据不同参数进行不同程度的回退效果：</p>
+<ul>
+<li><code>--hard</code>将回退<code>工作区</code>、<code>缓冲区</code>和<code>提交历史区</code>到指定的提交节点，来还原当时的情景，因此<strong>会丢弃当下<code>工作区</code>和<code>缓冲区</code>中的全部改动，也被视为危险操作</strong></li>
+<li><code>--mixed</code>将回退<code>缓冲区</code>和<code>提交历史区</code>到指定的节点，因此在<code>缓冲区</code>下的改动会返回到<code>工作区</code></li>
+<li><code>--soft</code>只回退<code>提交历史区</code>到指定的节点，多余的改动保留进了<code>缓冲区</code>，而<code>工作区</code>保持不变</li>
+</ul>
+<p><code>git reset</code>就是前面提到在正式提交前，进行后悔的撤销操作，其实该命令是<code>git reset --mixed HEAD</code>的简化版，即撤销到最近一次的提交历史。如果通过<code>reset</code>回退到以前，再想重新回到现在的话，还可以通过<code>git reflog</code>查找最新执行过的git操作，定位到回退操作前所在当前的commit_id，再用<code>git reset --hard &lt;commit_id&gt;</code>回来。</p>
+<h3 id="合作分支的历史修改"><a href="#合作分支的历史修改" class="headerlink" title="合作分支的历史修改"></a>合作分支的历史修改</h3><p>上面提到的所有关于历史的修改，仅仅限于本地操作，如果要修改一个多人合作分支的历史，就不建议这么做了，因为任何对过去历史节点的改动，都会造成与别人本地分支的不一致，无法顺利合作。但是这并不意味着在合作分支上就一定不允许“撤销”。git的<code>revert</code>命令就正好使用在这种场景，因为它所做的“撤销”不是删除历史节点，而是在当前的节点上增加一个新的节点来重新“撤销”后的结果。由于这种方式不会修改过去的历史记录，因此被认为是安全的“撤销”，这样就适合使用在多人合作的分支上。</p>
+<h2 id="合并"><a href="#合并" class="headerlink" title="合并"></a>合并</h2><h3 id="Merge-or-Rebase"><a href="#Merge-or-Rebase" class="headerlink" title="Merge or Rebase"></a>Merge or Rebase</h3><p>关于合并操作，除了可以常用的<code>merge</code>以外，还有<code>rebase</code>。后者是将一系列提交移动或整合到一个新的提交的基础上，说白话就是“拷贝嫁接”。</p>
+<p>这两个命令其实都是为了将分岔的工作流统一起来的方法，只是实现方式不同而已。<code>merge</code>是一种不会破坏历史线的安全方式，但是缺点是多次的合并会让不同的分支之间出现多次的穿插记录；而<code>rebase</code>是通过修改历史来创造出一个干净的线性工作流，方便代码审核与历史的可读性。</p>
+<p>在合并或同步工作流时，如果害怕出错的话，完全可以使用保守的<code>merge</code>方式；而其他某些情况下是<code>rebase</code>施展身手的时刻，比如：在本地feature分支上重新整理之前的提交历史，构造一个更简洁清晰的历史线。首先用<code>merge-base</code>命令找到开启分支/分岔点，然后通过交互式的<code>rebase</code>来重头整理这个feature分支的每个提交。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git merge-base feature master # 返回一个分岔的commit_id</span><br><span class="line">git rebase -i &lt;commit_id&gt;</span><br></pre></td></tr></table></figure>
+
+<p>但是使用<code>rebase</code>要遵守一条黄金定律，就是<code>rebase</code>不能用在公共分支上！因为其修改历史记录的特性会影响到其他协作同伴的工作流。</p>
+<h3 id="Pull-with-Rebase"><a href="#Pull-with-Rebase" class="headerlink" title="Pull with Rebase"></a>Pull with Rebase</h3><p>如果需要从远程master分支获取项目新的改动并整合到本地，通常的操作是<code>git pull origin master</code>，这里的<code>pull</code>命令实际上做了两件事：通过<code>fetch</code>获取远程分支，并将其<code>merge</code>合并到本地分支，所以它是一个<code>fetch + merge</code>的组合操作。</p>
+<p>当然从远程的更新，也可以选择跟<code>rebase</code>的方式进行组合，即拷贝远程的更新提交，并追加到本地分支最新的节点后。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull --rebase origin master</span><br></pre></td></tr></table></figure>
+
+<p>如果出现冲突，那么会终止当前的rebase操作，通过<code>git status</code>查看冲突文件，解决后可以继续<code>rebase</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add &lt;some_files&gt;</span><br><span class="line">git rebase --continue</span><br></pre></td></tr></table></figure>
+
+<p>之后git会继续在<code>rebase</code>过程中查看下一个提交是否构成冲突。如果希望撤回<code>rebase</code>操作的话，可以</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git rebase --abort</span><br></pre></td></tr></table></figure>
+
+<h2 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h2><p>这篇文章只是总结，根据开发需要，我主要把常用的命令和用法整理在了<a href="https://github.com/huang-kun/notes/blob/master/git/atlassian-git-note.md" target="_blank" rel="noopener">Git学习笔记</a>这里。博客中的大多数内容也摘自我的笔记。学习git需要持续地付出时间和精力，换来的是能够更好的使用这个工具来提高项目的开发效率与合作的能力，最后一定会在软件开发中节省更多的时间和精力。</p>
+<p>Yes, I want to become a git guru.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/git-guru/" data-id="ck2hbe6y8002ez1jb9hag201h" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/UICollectionViewLeftAlignedFlexibleLayout/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          通过中文布局来学习UICollectionViewLayout
+        
+      </div>
+    </a>
+  
+  
+    <a href="/ios-swizzling/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">记一次方法交换崩溃的故事</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

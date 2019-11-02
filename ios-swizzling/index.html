@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>记一次方法交换崩溃的故事 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="我从2014年决定作为一名iOS开发者后，工作了一年就了解到贵圈流传着一种“黑魔法”的特性，叫做“方法交换”。详细情况就不仔细介绍了，主要作用是将方法名对应默认方法实现转移到新的实现中。这种黑魔法的存在自然有它的意义，比如现在做统计的SDK就可以用方法交换来实现非侵入式的效果。写这篇博客主要是记录一次因为没有正确使用方法交换而引发的崩溃，并且追溯一下原因和提出解决方法。">
+<meta name="keywords" content="ios">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次方法交换崩溃的故事">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;ios-swizzling&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="我从2014年决定作为一名iOS开发者后，工作了一年就了解到贵圈流传着一种“黑魔法”的特性，叫做“方法交换”。详细情况就不仔细介绍了，主要作用是将方法名对应默认方法实现转移到新的实现中。这种黑魔法的存在自然有它的意义，比如现在做统计的SDK就可以用方法交换来实现非侵入式的效果。写这篇博客主要是记录一次因为没有正确使用方法交换而引发的崩溃，并且追溯一下原因和提出解决方法。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;ios-swizzling&#x2F;book_menu.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;ios-swizzling&#x2F;view_did_load.jpeg">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;ios-swizzling&#x2F;touch_began1.jpeg">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;ios-swizzling&#x2F;touch_began2.jpeg">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.935Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;ios-swizzling&#x2F;book_menu.png">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-ios-swizzling" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/ios-swizzling/" class="article-date">
+  <time datetime="2018-11-14T06:54:16.000Z" itemprop="datePublished">2018-11-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      记一次方法交换崩溃的故事
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我从2014年决定作为一名iOS开发者后，工作了一年就了解到贵圈流传着一种“黑魔法”的特性，叫做“方法交换”。详细情况就不仔细介绍了，主要作用是将方法名对应默认方法实现转移到新的实现中。这种黑魔法的存在自然有它的意义，比如现在做统计的SDK就可以用方法交换来实现非侵入式的效果。写这篇博客主要是记录一次因为没有正确使用方法交换而引发的崩溃，并且追溯一下原因和提出解决方法。</p>
+<a id="more"></a>
+
+<h2 id="方法交换的原理"><a href="#方法交换的原理" class="headerlink" title="方法交换的原理"></a>方法交换的原理</h2><p>在一篇<a href="https://nshipster.com/method-swizzling/" target="_blank" rel="noopener">NSHipster</a>的文章里有一段话描述了方法交换：</p>
+<blockquote>
+<p>Method swizzling is the process of changing the implementation of an existing selector. It’s a technique made possible by the fact that method invocations in Objective-C can be changed at runtime, by changing how selectors are mapped to underlying functions in a class’s dispatch table.</p>
+</blockquote>
+<p>我打个比方，一本书通常都会有目录，目录里记录了不同的章节和对应的页数。如果我们想看某个章节的话，首页找到那个章节的标题或名称，然后查看对应的页数，接着翻到那一页去阅读就可以了。</p>
+<img src="/ios-swizzling/book_menu.png" class="">
+
+<p>将书的概念使用到<code>Objective C</code>的话，可以这么理解：每个NSObject的子类都是一本书；每个类都会维护一个叫做<code>dispatch table</code>的分发列表，就是书的目录；在分发表里记录这个类中所有的方法名，相当于章节名称；而每个方法名指向的函数地址，相当于页数。所以在OC的运行时执行一个方法，相当于在一本书的目录中去查询这个方法名称，找到对应函数的位置，然后去那里执行相应实际的代码。</p>
+<p>方法交换的作用基本上是交换了目录里其中的两个“章节”各自对应的“页数”。比如上面那张截图中，交换了”Introduction”和”Ready Go”以后，想看”Introduction”章节的话，就要去第12页了。</p>
+<p>为什么在iOS开发中需要方法交换呢？拿<code>UIViewController</code>举例，如果想要统计<code>viewDidLoad</code>的调用时间或者调用次数，除了使用子类方法重载以外，方法交换是最方便的方案。我只需要实现一个<code>my_viewDidLoad</code>的方法，然后将其与原方法进行交换，之后只要在<code>UIViewController</code>或子类执行到<code>viewDidLoad</code>时，就会进入到<code>my_viewDidLoad</code>的代码中，然后可以在这里做咱们想做的事。</p>
+<img src="/ios-swizzling/view_did_load.jpeg" class="">
+
+<h2 id="不正确交换而引发的崩溃"><a href="#不正确交换而引发的崩溃" class="headerlink" title="不正确交换而引发的崩溃"></a>不正确交换而引发的崩溃</h2><p>在项目开发中，我们打算实现在点击按钮时发出音效的需求。由于涉及的按钮数量太多了，最终采取了方法交换的技术，通过交换<code>touchesBegan:withEvent:</code>方法做到在按下按钮的时候立即播放点击音效，以下是交换代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@implementation UIButton (Swizzling)</span><br><span class="line"></span><br><span class="line">+ (void)load &#123;</span><br><span class="line">    SEL originalSelector = @selector(touchesBegan:withEvent:);</span><br><span class="line">    SEL swizzledSelector = @selector(my_touchesBegan:withEvent:);</span><br><span class="line"></span><br><span class="line">    Method originalMethod = class_getInstanceMethod(self, originalSelector);</span><br><span class="line">    Method swizzledMethod = class_getInstanceMethod(self, swizzledSelector);</span><br><span class="line"></span><br><span class="line">    method_exchangeImplementations(originalMethod, swizzledMethod);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)my_touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event&#123;</span><br><span class="line">    [MySound playFileName:@&quot;click_sound.mp3&quot;];</span><br><span class="line">    [self my_touchesBegan:touches withEvent:event];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+
+<p>在实现<code>my_touchesBegan:withEvent:</code>的时候，调用了一句<code>[self my_touchesBegan:touches withEvent:event]</code>，原因是希望执行了自己的任务后，再重新回调到原来的默认实现，保证原来的行为一致。由于这个方法已经的实现已经被交换过了，因此这里不会陷入一个死循环，尽管从写法上看确实如此。</p>
+<p>运行以后，没什么问题，也实现了按钮音效的需求，皆大欢喜，直到有同事发现在点击<code>UITextField</code>的时候，应用崩溃了，原因是<code>-[UITextField my_touchesBegan:withEvent:]: unrecognized selector sent to instance</code>。一看就觉得是方法交换惹的祸，于是不得不排查一下原因。</p>
+<p><code>touchesBegan:withEvent:</code>方法源自于处理用户触屏等交互操作的<code>UIResponder</code>类，而<code>UIButton</code>做为<code>UIResponder</code>的子类，并没有自己实现或重载这个方法。在方法交换过程中，获取实例方法的函数由于在<code>UIButton</code>中找不到该方法的记录，因而转向其父类，一直追溯到了<code>UIResponder</code>，终于拿到了这个方法并实现交换。</p>
+<p>点击<code>UITextField</code>之后，由于触屏操作而执行了<code>UIResponder</code>的<code>touchBegan:withEvent:</code>方法，由于该方法经过了交换，从而执行了<code>my_touchesBegan:withEvent:</code>，安全执行了音频播放后，接着调用了一句<code>[self my_touchesBegan:touches withEvent:event]</code>进行默认行为回调，而<code>UITextField</code>并没有自己实现任何的<code>my_touchesBegan:withEvent:</code>方法，因此抛出异常。</p>
+<img src="/ios-swizzling/touch_began1.jpeg" class="">
+
+<p>所以说，崩溃的直接原因是回调了不属于类自己的方法，但是我们期望的是方法交换仅作用于<code>UIButton</code>而不打算影响到其他的类，所以经过分析后，我们需要做的是：如何让<code>UIButton</code>自己实现<code>touchBegan:withEvent:</code>方法，从而在安全的范围内进行方法交换？</p>
+<img src="/ios-swizzling/touch_began2.jpeg" class="">
+
+<h2 id="安全方法交换的姿势"><a href="#安全方法交换的姿势" class="headerlink" title="安全方法交换的姿势"></a>安全方法交换的姿势</h2><p>在那篇<a href="https://nshipster.com/method-swizzling/" target="_blank" rel="noopener">NSHipster</a>的文章里其实已经给出了解决方案，即如果一个类没有自己实现将要被交换的方法，需要在运行时首先给它添加方法，从而避免方法交换到父类造成大面积影响。结合按钮音效的例子来看，做法就是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">SEL originalSelector = @selector(touchesBegan:withEvent:);</span><br><span class="line">SEL swizzledSelector = @selector(my_touchesBegan:withEvent:);</span><br><span class="line"></span><br><span class="line">// 由于UIButton没有实现touchesBegan，所以获取了UIResponder的触屏实例方法</span><br><span class="line">Method originalMethod = class_getInstanceMethod(theClass, originalSelector);</span><br><span class="line">Method swizzledMethod = class_getInstanceMethod(theClass, swizzledSelector);</span><br><span class="line"></span><br><span class="line">// 尝试给UIButton添加一个的方法，名称叫做touchesBegan但是对应的实现使用my_的自定义方法的实现</span><br><span class="line">BOOL success = class_addMethod(theClass, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod));</span><br><span class="line">if (success) &#123;</span><br><span class="line">    // 如果添加成功，就将自定义的my_方法的实现替换成UIResponder的触屏实例方法</span><br><span class="line">    class_replaceMethod(theClass, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    // 如果添加失败，说明这个类本身实现了名为touchesBegan的方法，所以直接交换即可</span><br><span class="line">    method_exchangeImplementations(originalMethod, swizzledMethod);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除此之外，还需要考虑其他因素：</p>
+<ul>
+<li>在所有类加载后的<code>load</code>方法中实现</li>
+<li>使用<code>dispatch_once</code>可以确保交换机会只有一次</li>
+<li>在自定义方法中，通常需要回调到原来的方法中，确保不破坏默认的行为</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://nshipster.com/method-swizzling/" target="_blank" rel="noopener">Method Swizzling</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/ios-swizzling/" data-id="ck2hbe6wb0017z1jb3flrdk3l" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/git-guru/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          成为一名git大师
+        
+      </div>
+    </a>
+  
+  
+    <a href="/Enumerator/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">巧用迭代器</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

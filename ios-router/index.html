@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>iOS实现一个简单的路由 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="什么是路由呢？路由的工作是负责页面跳转，你给出一个链接，通过路由负责解析地址，最终生成并展示指定的页面（这里的页面不是网页，而是iOS的UIViewController）。为什幺要做路由呢？参考一下浏览器，只要输入一个地址，就能跳转到指定的网页。但是在iOS普遍实现跳转页面是这样的： 1234567#import &amp;quot;ProfileViewController.h&amp;quot;Profile">
+<meta name="keywords" content="ios">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS实现一个简单的路由">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;ios-router&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="什么是路由呢？路由的工作是负责页面跳转，你给出一个链接，通过路由负责解析地址，最终生成并展示指定的页面（这里的页面不是网页，而是iOS的UIViewController）。为什幺要做路由呢？参考一下浏览器，只要输入一个地址，就能跳转到指定的网页。但是在iOS普遍实现跳转页面是这样的： 1234567#import &amp;quot;ProfileViewController.h&amp;quot;Profile">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.934Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-ios-router" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/ios-router/" class="article-date">
+  <time datetime="2018-08-17T03:00:14.000Z" itemprop="datePublished">2018-08-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      iOS实现一个简单的路由
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>什么是路由呢？路由的工作是负责页面跳转，你给出一个链接，通过路由负责解析地址，最终生成并展示指定的页面（这里的页面不是网页，而是iOS的<code>UIViewController</code>）。为什幺要做路由呢？参考一下浏览器，只要输入一个地址，就能跳转到指定的网页。但是在iOS普遍实现跳转页面是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;ProfileViewController.h&quot;</span><br><span class="line"></span><br><span class="line">ProfileViewController *pvc = [[ProfileViewController alloc] init];</span><br><span class="line">pvc.userId = 123;</span><br><span class="line">pvc.hideNavBar = YES;</span><br><span class="line"></span><br><span class="line">[rootvc.navigationController pushViewController:pvc animated:YES];</span><br></pre></td></tr></table></figure>
+
+<p>如果能用路由来跳转，就能改成下面这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[Router openURL:@&quot;myapp://profile?userId=123&amp;hideNavBar=true&quot; completion:^(id obj)&#123;</span><br><span class="line">    [rootvc.navigationController pushViewController:obj animated:YES];</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+
+<p>改成路由的好处有：</p>
+<ol>
+<li>解除耦合：不需要<code>import</code>其他的文件</li>
+<li>动态跳转：可以通过服务器来控制跳转页面和指定参数</li>
+</ol>
+<a id="more"></a>
+
+<h2 id="动态加载对象"><a href="#动态加载对象" class="headerlink" title="动态加载对象"></a>动态加载对象</h2><p>因为iOS的动态运行机制，允许在运行时加载类和对象，这也就构成了路由的可行性。我们可以指定加载的类名，然后让iOS生成对应的对象，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Router openURL:@&quot;myapp://ProfileViewController?userId=123&amp;hideNavBar=true&quot;];</span><br></pre></td></tr></table></figure>
+
+<p>当Router接收并解析出<code>ProfileViewController</code>字符名称，然后就可以生成类，再生成对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Class cls = NSClassFromString(@&quot;ProfileViewController&quot;);</span><br><span class="line">id obj = [[cls alloc] init];</span><br><span class="line">[obj setRouteParameters:urlParameters];</span><br><span class="line">completion(obj);</span><br></pre></td></tr></table></figure>
+
+<p>相应的在<code>ProfileViewController</code>需要实现<code>setRouteParameters:</code>的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (void)setRouteParameters:(NSDictionary *)params &#123;</span><br><span class="line">    self.userId = params[@&quot;userId&quot;].longlongValue;</span><br><span class="line">    self.hideNavBar = params[@&quot;hideNavBar&quot;].boolValue;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为了明确支持路由的类需要实现哪些方法，建议定义一个<code>Routable</code>协议：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@protocol Routable &lt;NSObject&gt;</span><br><span class="line">- (void)setRouteParameters:(NSDictionary &lt;NSString *, NSString *&gt; *)params;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@interface ProfileViewController: UIViewController &lt;Routable&gt;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+
+<h2 id="注册路径名称"><a href="#注册路径名称" class="headerlink" title="注册路径名称"></a>注册路径名称</h2><p>像<code>myapp://ProfileViewController?userId=123</code>这样的URL虽然可以指定加载类名，但是未免也太明显了，把iOS的原生类暴露到URL里不是一个明智的方案，而且也不好看。要是改成<code>myapp://profile?userId=123</code>就好多了，这就是URL里正常的路径（其实是host）。但这就需要Router知道对应关系，从URL解析出<code>profile</code>的时候，能够查到注册该路径的类名为<code>ProfileViewController</code>，才能继续动态类的加载。所以我们需要实现注册的API</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 注册类</span><br><span class="line">[Route registerURN:@&quot;profile&quot; forClass:ProfileViewController.class];</span><br><span class="line">// 或者注册类名，前提是只有存在这个类才可以注册成功</span><br><span class="line">[Route registerURN:@&quot;profile&quot; forClassname:@&quot;ProfileViewController&quot;];</span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>URN</code>是指<code>Uniform Resource Name</code>，好比<code>URL</code>一样，但不是资源地址，而是资源名称，通过名称来定位资源。实现<code>registerURN:forClass:</code>方法就是用一个集合类来保存这些映射关系。</p>
+<p>既然有了路径的概念，那么我们还可以继续添加二级路径，比如<code>profile/home</code>和<code>profile/detail</code>等用来对应更细化的页面。</p>
+<h3 id="注册额外信息"><a href="#注册额外信息" class="headerlink" title="注册额外信息"></a>注册额外信息</h3><p>回到前面的动态加载中，创建一个对象通过<code>[[class alloc] init]</code>的方式，可以满足<code>UIViewController</code>子类通过纯代码创建，或者由<code>xib</code>文件来加载（前提是文件名称与类名一致）。但是如果某些<code>UIViewController</code>子类直接放在<code>Storyboard</code>的话，就需要通过<code>UIStoryboard</code>的方式来生成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:nil];</span><br><span class="line">UIViewController *profileViewController = [storyboard instantiateViewControllerWithIdentifier:@&quot;Profile&quot;];</span><br></pre></td></tr></table></figure>
+
+<p>Router怎么知道如果正确生成一个类的对象呢？可以在注册的时候通过附加额外参数来告诉它，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Router registerURN:@&quot;profile&quot; forClass:ProfileViewController.class info:@&#123; RouterInfoKeyUseStoryboardName: @&quot;Main&quot;, RouterInfoKeyUseStoryboardId: @&quot;Profile&quot; &#125;];</span><br></pre></td></tr></table></figure>
+
+<p>于是在Router的openURL方法中通过指定的额外信息来决定如何创建对象以及进行其他的配置。</p>
+<h2 id="URL解析"><a href="#URL解析" class="headerlink" title="URL解析"></a>URL解析</h2><p>路由的核心还包括如何正确解析一个URL来拿取跳转数据，比如<code>http://example.com/profile?userId=123&amp;lang=en</code>，需要将其分解为：</p>
+<ul>
+<li><code>scheme</code>: http</li>
+<li><code>host</code>: example.com</li>
+<li><code>path</code>: /profile，前面是带<code>/</code>的</li>
+<li><code>params</code>: 一组key和value的配对，{ userId: 123, lang: en }</li>
+</ul>
+<p>完整的URL构造可以看<code>NSURL</code>的文档。<code>Foundation</code>为iOS 7.0+提供了<code>NSURLComponents</code>，专门用于将URL成解剖上面所有的零部件。首先检查scheme是否能匹配到自己的app。由于一个URL必须存在一个host，那么<code>myapp://profile</code>中的<code>profile</code>就会被解析成host而非path，而<code>myapp://profile/detail</code>里才会有<code>/detail</code>作为path。我的路由就是将<code>host + path</code>的字段作为<code>URN</code>来匹配相应的类。</p>
+<p>作为参数部分，<code>Foundation</code>在iOS 8.0+提供了<code>NSURLQueryItem</code>，将URL里的参数解析成key/value的形式，比如<code>userId=123</code>对应一个<code>NSURLQueryItem</code>对象。注意文档里特别说明一点：读取的结果是<code>not percent-encoded</code>，什么意思呢？往下看。</p>
+<h3 id="URL-Encode"><a href="#URL-Encode" class="headerlink" title="URL Encode"></a>URL Encode</h3><p>iOS里最常见的跳转是加载网页。如果用路由实现的话，首先注册一个路径:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Router registerURN:@&quot;web&quot; forClass:WebViewController.class]</span><br></pre></td></tr></table></figure>
+
+<p>对于加载网页，总要给个地址作为参数吧，于是就可以写成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Router openURL:@&quot;myapp://web?url=http://example.com&quot;];</span><br></pre></td></tr></table></figure>
+
+<p>这没有什么问题，但是想象一个稍微复杂的情况：</p>
+<ol>
+<li>我要给WebViewController同时传入两个参数：url和title</li>
+<li>网页加载的地址为 <a href="http://example.com/search?q=hello&amp;lang=en" target="_blank" rel="noopener">http://example.com/search?q=hello&amp;lang=en</a></li>
+<li>网页的标题为“hello world”</li>
+</ol>
+<p>如果只是简单把它们拼接成路由地址的话，就变成了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myapp://web?url=http://example.com/search?q=hello&amp;lang=en&amp;title=hello world</span><br></pre></td></tr></table></figure>
+
+<p>路由跳转这个地址，结果肯定是失败的，原因是：</p>
+<ol>
+<li>URL里不能存在空格，它被看作是非法的URL字符</li>
+<li>网页链接存在<code>&amp;</code>，但是路由地址的不同参数也是用<code>&amp;</code>来连接的，于是就造成歧义：title到底是网页链接的参数，还是路由的参数呢？</li>
+</ol>
+<p>解决这个问题的方法叫做编码(URL Encode)，即通过编码，将URL中的非法字符进行转化，成为能够接受的合法字符。在<a href="https://en.wikipedia.org/wiki/Percent-encoding" target="_blank" rel="noopener">wiki</a>里介绍了相应的转化规则，比如空格会编码成<code>%20</code>，于是<code>hello world</code>就成了<code>hello%20world</code>。</p>
+<p>同样的原理，如果参数值中带有<code>&amp;</code>的话，我们可以将其进行编码，这样就避免与路由中的参数连接符号<code>&amp;</code>出现歧义了。</p>
+<p>iOS编码方法主要是通过<code>Foundation</code>定义的一系列URL编码规则：<code>URLQueryAllowedCharacterSet</code>，<code>URLPathAllowedCharacterSet</code>等等，这些都是<code>NSCharacterSet</code>对象。我们也可以自己定义编码规则，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/// 自定义Route编码字符集</span><br><span class="line">@interface NSCharacterSet (Route)</span><br><span class="line">@property (readonly, class, copy) NSCharacterSet *my_URLRouteParamAllowedCharacterSet;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation NSCharacterSet (Route)</span><br><span class="line"></span><br><span class="line">static NSCharacterSet *_URLRouteParameterValueCharacterSet = nil;</span><br><span class="line"></span><br><span class="line">+ (NSCharacterSet *)my_URLRouteParamAllowedCharacterSet &#123;</span><br><span class="line">    if (!_URLRouteParameterValueCharacterSet) &#123;</span><br><span class="line">        NSMutableCharacterSet *charSet = [NSMutableCharacterSet characterSetWithCharactersInString:@&quot; =&amp;\&quot;#%/:&lt;&gt;?@[\\]^`&#123;|&#125;&quot;];</span><br><span class="line">        [charSet invert];</span><br><span class="line">        [charSet formIntersectionWithCharacterSet:NSCharacterSet.URLQueryAllowedCharacterSet]; // 包含中文等字符的编码</span><br><span class="line">        _URLRouteParameterValueCharacterSet = charSet.copy;</span><br><span class="line">    &#125;</span><br><span class="line">    return _URLRouteParameterValueCharacterSet;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+
+<p>即除了空格,<code>&amp;</code>,<code>#</code>,<code>=</code>等等这些字符以外的字符集都可以作为路由的参数值，使用的话就调用字符串的编码API</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSString *url = @&quot;http://example.com/search?q=hello&amp;lang=en&quot;;</span><br><span class="line">NSString *escapedUrl = [url stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.my_URLRouteParamAllowedCharacterSet];</span><br></pre></td></tr></table></figure>
+
+<p>于是像<code>http://example.com/search?q=hello&amp;lang=en</code>这样的地址作为路由参数的话，其中除了英文和<code>.</code>以外都会被编码，结果就是<code>http%3A%2F%2Fexample.com%2Fsearch%3Fq%3Dhello%26lang%3Den</code>，这样就可以被安全作为路由的参数了。</p>
+<h3 id="重复编码的危险"><a href="#重复编码的危险" class="headerlink" title="重复编码的危险"></a>重复编码的危险</h3><p>在前面的wiki链接里，可以发现<code>%</code>也能编码成<code>%25</code>，这就意味着编码不是一次性就能结束的，而是由<code>hello world</code>一次编码成<code>hello%20world</code>，接着可以二次编码成<code>hello%2520world</code>，然后三次编码成<code>hello%252520world</code>… 为此，我能够想到的避免重复编码的方法就是，编码前先用<code>stringByRemovingPercentEncoding</code>回退到原始状态，再进行编码。</p>
+<h3 id="NSURLQueryItem"><a href="#NSURLQueryItem" class="headerlink" title="NSURLQueryItem"></a>NSURLQueryItem</h3><p>还有一个简单的方法处理URL参数的编码问题，就是交给<code>NSURLQueryItem</code>对象。无论是创建URL还是解析URL，<code>NSURLQueryItem</code>都可以自己处理编码和解码。由于重复编码会出现问题，因此文档里明确表示不要在创建<code>NSURLQueryItem</code>对象之前给它一个编码后的value，不然就会得到二次编码的错误结果。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在写这篇博客前，我其实没有仔细看过一些iOS开源Router的实现，仅仅是因为业务需求而产出的一个简单路由，记录一下实现iOS路由从0到1的思路。相信随着业务的增加，也许会进化成更强大的路由。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/ios-router/" data-id="ck2hbe6yc002mz1jb7k3p69ov" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/vinyl-spin/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          唱片效果
+        
+      </div>
+    </a>
+  
+  
+    <a href="/dynamic-keyframe-animation/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">动态帧动画</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

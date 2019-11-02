@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>理解计算机网络 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概念计算机网络的兴起基本是在个人计算机的发明和普及之上，计算机的出现，不仅让人们的生产效率得到提高，同时也成为人类在信息时代进行文字出版、软件制作、艺术创造的工具。为了让用户能通过自己的计算机来访问其他计算机中的数据和信息，实现信息分享的目的，于是出现了计算机网络。 构建一个基本的计算机网络，理论上讲，只要满足以下这几个条件：  拥有两台以上的计算设备 搭建设备间的连接 提供允许访问的信息和数据">
+<meta name="keywords" content="路由,router,局域网,广域网,客户端,服务端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解计算机网络">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;understand_network&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="概念计算机网络的兴起基本是在个人计算机的发明和普及之上，计算机的出现，不仅让人们的生产效率得到提高，同时也成为人类在信息时代进行文字出版、软件制作、艺术创造的工具。为了让用户能通过自己的计算机来访问其他计算机中的数据和信息，实现信息分享的目的，于是出现了计算机网络。 构建一个基本的计算机网络，理论上讲，只要满足以下这几个条件：  拥有两台以上的计算设备 搭建设备间的连接 提供允许访问的信息和数据">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.949Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-understand_network" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/understand_network/" class="article-date">
+  <time datetime="2018-01-18T13:44:23.000Z" itemprop="datePublished">2018-01-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      理解计算机网络
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><code>计算机网络</code>的兴起基本是在<code>个人计算机</code>的发明和普及之上，计算机的出现，不仅让人们的生产效率得到提高，同时也成为人类在信息时代进行文字出版、软件制作、艺术创造的工具。为了让用户能通过自己的计算机来访问其他计算机中的数据和信息，实现信息分享的目的，于是出现了计算机网络。</p>
+<p>构建一个基本的计算机网络，理论上讲，只要满足以下这几个条件：</p>
+<ol>
+<li>拥有两台以上的计算设备</li>
+<li>搭建设备间的连接</li>
+<li>提供允许访问的信息和数据</li>
+</ol>
+<a id="more"></a>
+
+<h2 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h2><h4 id="信息分享"><a href="#信息分享" class="headerlink" title="信息分享"></a>信息分享</h4><p>个人计算机的价值在于提升个人生产力，但是产出的信息和数据如果仅存在于各自的桌面上，又有何价值呢？对企业来说，价值不在于数据本身，而是通过数据分析来做出能让企业盈利的决策。因此需要信息的分享和连接。</p>
+<p>起初的分享，仅仅是数据从一台计算机到另一台的传输，但是人们却不满足于此，因为分享除了信息的传递以外，分享者还会关注大家的讨论和反馈，于是交流的需求推动了网络技术的发展。从地域来看，网络的分享范围也仅局限于连接到网络计算机的物理位置，如果希望更多更大范围的人群能接触和参与信息分享，就需要更多的线路和更多计算机的接入。随着网络规模的扩大，信息的分享已经逐渐消除了地域的障碍。互联网的诞生，能够让自己的资源在任何时刻共享给世界上任何一个人或更多人，这就超越了时空的限制。如今电子邮件替代了传统邮件，通过网络，几秒钟就能发送到地球另一端，和交通工具运输相比，省去了无数日夜的等待。</p>
+<h4 id="资源共享"><a href="#资源共享" class="headerlink" title="资源共享"></a>资源共享</h4><p>有很长一段时间，人们使用软盘（后来发展到U盘）将文件拷贝从一台电脑到另一台用于打印。越早期的计算机容量越小，同一个文件被携带和拷贝至多份，以至于个人电脑的空间逐渐被填满。网络的出现，改变了这种格局。服务器使得大量文件可以共享，甚至不用存放在个人电脑中，比如重要的数据和大量资源信息，都可以储存在一台计算机设备上，让其他员工通过网络来获取和访问。更重要的是网络能够节省企业的采购成本，而搭建一个网络的开销，远小于购置批量购买昂贵设备产生的花费。比如公司需要购置打印机，而打印机属于外接设备，像键盘和鼠标一样，需要依附于电脑，在网络的帮助下，公司只需要给一台电脑配置一台打印机，然后所有员工都可以通过各自的电脑访问到这台打印机，充分发挥打印机的使用效率。</p>
+<h4 id="多人协作"><a href="#多人协作" class="headerlink" title="多人协作"></a>多人协作</h4><p>网络能够让多个用户访问同一份资源文件，这样就出现了多人协作的办公方式。每位员工都能够为同一个项目提交自己的贡献和成果，其他成员也能够对此交流意见。网络让这一切便得更加高效，而且多人协作完全不用局限于一座办公楼里，即使团队成员分散至多个城市，依然可以合作。同时也簇生了很多协作办公的软件。</p>
+<h4 id="加速商业中心化管理"><a href="#加速商业中心化管理" class="headerlink" title="加速商业中心化管理"></a>加速商业中心化管理</h4><p>早期的网络中，接入网络的计算机都安装和运行各自的程序和软件，对于企业中负责运维的技术人员来说，管理这些计算机就很麻烦。从规模经济的理论来看，企业更倾向于购置同样配置的计算机，因为批量购买同一型号产品使得总成本得到优惠。到了90年中期，运维人员有效利用网络，将部署和维护一台计算机的方式，同样适用于其他类似的机型，于是减少了计算机的维护成本。这种中心化的管理方式在商业中得到加速普及，而网络也帮助企业减少了成本开销。</p>
+<h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><h4 id="按地理位置分类"><a href="#按地理位置分类" class="headerlink" title="按地理位置分类"></a>按地理位置分类</h4><p>按照地理位置，可以将网络分为：</p>
+<ul>
+<li>局域网（Local Area Network，简称LAN）</li>
+<li>城域网（Metropolitan Area Network，简称MAN）</li>
+<li>广域网（Wide Area Network，简称WAN）</li>
+</ul>
+<p>局域网是一个小范围小规模的网络，例如学校、工作单位中搭建的内部网络。跟其他的网络相比，局域网的搭建开销最小，一是设备数量有限，二是所有设备都基本放置在一起，一般也用不着昂贵的、远距离的传输介质，因此成本低、网速快。</p>
+<p>当计算机分布在不同区域，距离相对分散的时候，连接它们就需要增加额外的通信设备和技术支持。城域网可以理解为一个连接城市的网络，英文Metropolitan就译为大都市。这样的网络在规模和搭建成本上都高于局域网，但是访问速度并不是问题，因为可以通过布置光纤来提速。</p>
+<p>如果计算机网络的分布区域超过了都市级别的话，就成了广域网，我们说的互联网就是一个巨大的广域网。互联网连接了世界范围内的计算机，可以共享的资源如今已是天文数字级别了。不过搭建广域网的成本和技术支持也是最高级别的，比如建立不同国家之间的通信，就可能需要铺设海底光缆，一般需要巨头企业和国家财政的支持。</p>
+<h4 id="按职能分工分类"><a href="#按职能分工分类" class="headerlink" title="按职能分工分类"></a>按职能分工分类</h4><p>如果按照计算机在网络中的职能和分工不同来区分网络，可以分为：</p>
+<ul>
+<li>点对点网络（Peer-to-Peer Network）</li>
+<li>服务器网络（Server-Based Network）</li>
+<li>客户端网络（Client-Based Network）</li>
+</ul>
+<p>点对点网络，也是人们口语中说的P2P网络，意思是每个连接到网络的计算机，地位平等，没有职能上的差异之分，没有控制中心。任何一个计算机都可以根据需要充当为服务器或者客户端，即非中心化的网络。</p>
+<p>服务器网络，就是让一个计算机作为中心服务器，存储的数据和应用，掌管访问权限和网络安全设置，允许其他客户端来访问资源。这里描述的服务器更像一个图书馆一样，只是负责存储资源和提供借还服务而已。</p>
+<p>客户端网络，是服务器网络的扩展和延伸。服务器通常面临着大量请求和信息处理，为了减轻自身的负担，可以将计算能力分摊到其他计算机上，相当于部署一个工作站：有的计算机负责接收和分配请求，有的计算机负责处理邮件，有的计算机负责运行某些应用程序等，它们像团队一样分工明确，以保证大量请求能够被及时处理和返回。</p>
+<h2 id="演变"><a href="#演变" class="headerlink" title="演变"></a>演变</h2><h4 id="Hop"><a href="#Hop" class="headerlink" title="Hop"></a>Hop</h4><p>最理想的情况就是，在两台计算机之间搭建一条线路，就能实现通信。可实际的问题是，线路的建设会随着距离的增长而变得昂贵，如果两个计算机相隔十万八千里，那么铺设线路的成本就会剧增。再说，架设计算机的网络线路又不能像使用“土电话”那样，两个听筒和一根线就能连接两个人的通话，如果每个人都愿意跟其他人建立通话线路的话，假如每两个人之间建立一条线路，其数量可想而知。</p>
+<p>如果将相邻的计算机连接起来，让信息从一个计算机发出，途径一个个计算机，被间接传送到指定终点的计算机，这样中转发送的方式就成了一个不错的解决方案。途径的计算机可以被理解为中转站（或者跳板<code>hop</code>），它们收到信息后，临时储存并转发至下一个中转站。</p>
+<h4 id="Packet"><a href="#Packet" class="headerlink" title="Packet"></a>Packet</h4><p>一个中转站接收到来自其他各个中转站的大量消息，然后将消息排成一个队列，最先到的消息最早被发送出去。假如某个信息的数据量巨大，后面的排队的信息也只有等它全部发送完之后才能被送出去。如果网络拥堵的话，那么信息只有在中转站那里等待，这就导致用户发送一封电子邮件也有可能长达几个小时才能被收件方看到。</p>
+<p>为了提速，人们想到了更好的点子：将信息分割成很多个片段，每个片段称之为一个包裹（<code>packet</code>），不仅包含了数据片段和位置偏移量，而且带有信息源和送达地址信息。这些包裹一经发出后，有可能就分散至不同的中转站，而中转站发送较小的包裹就不容易造成拥堵，并且根据包裹的地址做出决策，将其发送到下一个合适的中转站。等所有的包裹到达目的地后，计算机就根据包裹的数据位置偏移量，把零散的数据重新组装成完整的信息，完成送达任务。</p>
+<h4 id="Router"><a href="#Router" class="headerlink" title="Router"></a>Router</h4><p>至于中转站，最早就是计算机。后来为了提高效率，出现了专门执行包裹中转任务的计算机设备，它们起初被称为<code>IMPs</code>(Interface Message Processors)，后来演变成了如今的路由器（<code>router</code>）。“路由”是英文“route”的音译，而route意思就是路线。路由器负责为中转来的包裹提供专业递送服务，它会根据包裹的送达地址制定出一条配送路线。如果打算将一台新的计算设备接入网络，那么只要将它接入路由器，其余的通信细节就交给路由器处理。</p>
+<p>在同一个地点的多个计算机可以通过布线的方式组成局域网（LAN），局域网再接入路由器，就能连接到更广阔的网络环境（WAN），于是就能实现信息的远距离传输。</p>
+<p>互联网的核心，就是很多个路由器一起合作，在同一时刻将数据从各个数据源及时传递到目的地，实现接入互联网的任意一个计算机（包括手机或其他具备网络功能的电子设备）都能够与其他接入互联网的计算机进行通信。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>写了这篇文章，其实算是读书笔记，在阅读以后，记录下自己对计算机网络的理解。</p>
+<ul>
+<li><a href="https://www3.nd.edu/~cpoellab/teaching/cse40814_fall14/networks.pdf" target="_blank" rel="noopener">Introducing Basic Network Concepts</a></li>
+<li><a href="http://do1.dr-chuck.net/net-intro/EN_us/net-intro.pdf" target="_blank" rel="noopener">Introduction to Networking</a> by Charles Severance</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/understand_network/" data-id="ck2hbe6yo002zz1jb2ifkaf38" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/mysql_unicode/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          MySQL支持Unicode
+        
+      </div>
+    </a>
+  
+  
+    <a href="/mysql_pagination/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">MySQL翻页请求</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

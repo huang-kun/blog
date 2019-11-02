@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="黄琨的博客">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;page&#x2F;2&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:locale" content="zh-cn">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-docker" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/docker/" class="article-date">
+  <time datetime="2018-03-05T02:19:41.000Z" itemprop="datePublished">2018-03-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/docker/">Docker入门解读</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="什么是docker"><a href="#什么是docker" class="headerlink" title="什么是docker"></a>什么是docker</h2><p>docker是一个“集装箱”技术，让应用程序执行在密闭的<code>容器</code>环境中，然后可以把容器部署到其他操作系统平台，而且不需要进行额外的配置就能正常运行应用。</p>
+<p>举个例子，我打算开发一个Web应用，我决定：</p>
+<ul>
+<li>使用Swift开发，因为上手很快</li>
+<li>使用Xcode作为编辑器，不仅支持Swift，而且提升开发效率</li>
+</ul>
+<p>但是这个应用最终需要放在服务器上运行的，而服务器是Linux操作系统，如果我直接把应用放在Linux里运行的话，结果就出问题。比如我在mac上安装了MySQL用来做为数据库，但是服务器上没有安装任何数据库，所以要远程安装数据库、修改默认配置、导入默认数据等等，即使这些事情在本地环境已经配置好，却任然要在服务器上再配置一遍。应用本身是基于Swift语言开发的，我在mac上下载了最新的Xcode，包括了Swift开发环境，但是服务器没有安装过Swift，于是需要去Swift官网下载相应版本的语言安装包，按照官方给的安装步骤进行操作。</p>
+<p>有了docker，就可以让复杂的部署变得容易。只需要把Web应用封装到容器里，在容器中提供程序需要的语言环境和数据库，只要能正常运行，就可以把这样的容器部署到多台服务器中去运行，省去了重复的安装配置。</p>
+<p>docker是通过<code>镜像</code>来生成容器的，镜像好比一个模版，而容器是由模版制作出的实例对象。从官方的镜像仓库中就可以找到Swift和MySQL等很多默认的镜像。镜像可以是不依赖于其他镜像的基础镜像，也可以是以其他镜像作为基础而构建出的新的镜像。比如我的Web应用使用Swift开发，那么就可以为这个应用构建一个基于Swift镜像的Web应用镜像。此外还要再获取一个MySQL的镜像，然后分别构建出web和mysql两个容器，里面分别运行着服务器应用和数据库服务。容器之间是相互隔离的环境，但是也允许相互通信，只需要将这两个容器放置在同一个网络环境就可以做到，实现让web容器向mysql容器发出数据获取、插入、更新等请求。</p>
+<h2 id="daemon"><a href="#daemon" class="headerlink" title="daemon"></a>daemon</h2><p>我推荐安装docker的方法是，在docker官网下载对应平台的软件，比如我下载的就是Mac版的docker应用。安装运行以后，docker会启动一个叫做<code>daemon</code>的后台入驻程序，用来接受用户指令，执行镜像构建、容器部署等具体任务。用户需要做的，就是打开命令行终端，输入docker命令。</p>
+<h2 id="compose"><a href="#compose" class="headerlink" title="compose"></a>compose</h2><p>实现docker的部署，都是命令行操作来完成的。但是对于构建复杂的应用来说，会出现执行参数多、容器关联网络、容器执行顺序等众多问题。每次都手动输入命令的话，也是一项体力活，而且也不能保证不出错。这时候，可以使用<code>docker-compose</code>，把命令行参数转化为YAML格式的文件，于是容器的构建和启动等配置就通过文件解析，而不是手动输入命令，省时省力。</p>
+<h2 id="volume"><a href="#volume" class="headerlink" title="volume"></a>volume</h2><p>volume是用来实现容器数据持久化的方案。比如我每次启动MySQL容器时，都需要更新默认配置。使用mount可以在每次运行容器时将配置文件导入到容器环境内，更新默认数据。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/docker/" data-id="ck2hbe6vr000kz1jb0wvk6ex2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-swift_debug_flag" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/swift_debug_flag/" class="article-date">
+  <time datetime="2018-02-17T03:09:05.000Z" itemprop="datePublished">2018-02-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/swift_debug_flag/">Swift的DEBUG标记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>经历了一些Xcode配置挫折以后，我于是总结了一下：</p>
+<ol>
+<li>Swift中如何替代宏定义</li>
+<li>如何正确设置Swift调试环境下<code>DEBUG</code>条件编译，包括<code>命令行</code>和<code>Xcode</code>。</li>
+</ol>
+        
+          <p class="article-more-link">
+            <a href="/swift_debug_flag/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/swift_debug_flag/" data-id="ck2hbe6x0001kz1jbbaro5wxb" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-mysql_unicode" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/mysql_unicode/" class="article-date">
+  <time datetime="2018-02-04T13:55:25.000Z" itemprop="datePublished">2018-02-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/mysql_unicode/">MySQL支持Unicode</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在安装mysql以后，除了添加root密码以外，最重要的事情就是：适配Unicode字符集。默认的数据库使用的是<code>latin1</code>字符集，不支持中文、日文、emoji表情等等，如果不做适配的话，数据库里的中文都会显示成<code>?</code>字符。</p>
+        
+          <p class="article-more-link">
+            <a href="/mysql_unicode/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/mysql_unicode/" data-id="ck2hbe6yd002oz1jb7zu2fewh" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-understand_network" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/understand_network/" class="article-date">
+  <time datetime="2018-01-18T13:44:23.000Z" itemprop="datePublished">2018-01-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/understand_network/">理解计算机网络</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><code>计算机网络</code>的兴起基本是在<code>个人计算机</code>的发明和普及之上，计算机的出现，不仅让人们的生产效率得到提高，同时也成为人类在信息时代进行文字出版、软件制作、艺术创造的工具。为了让用户能通过自己的计算机来访问其他计算机中的数据和信息，实现信息分享的目的，于是出现了计算机网络。</p>
+<p>构建一个基本的计算机网络，理论上讲，只要满足以下这几个条件：</p>
+<ol>
+<li>拥有两台以上的计算设备</li>
+<li>搭建设备间的连接</li>
+<li>提供允许访问的信息和数据</li>
+</ol>
+        
+          <p class="article-more-link">
+            <a href="/understand_network/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/understand_network/" data-id="ck2hbe6yo002zz1jb2ifkaf38" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-mysql_pagination" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/mysql_pagination/" class="article-date">
+  <time datetime="2018-01-17T11:03:00.000Z" itemprop="datePublished">2018-01-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/mysql_pagination/">MySQL翻页请求</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这里说的翻页，其实就是分批次请求数据。</p>
+<p>假如我创建一个论坛，尽管数据库里有上百条帖子，但是论坛的网页只能一次显示20条，所以首页展示最近的20条帖子标题，然后点击下一页，就展示后续的20条。</p>
+        
+          <p class="article-more-link">
+            <a href="/mysql_pagination/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/mysql_pagination/" data-id="ck2hbe6wg001az1jbafba6fek" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-swift_command_line" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/swift_command_line/" class="article-date">
+  <time datetime="2018-01-12T12:07:00.000Z" itemprop="datePublished">2018-01-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/swift_command_line/">Swift构建命令行工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>使用Swift来写脚本或者在terminal中运行的工具，是一件很诱人的事情，原因如下：</p>
+<ul>
+<li>Swift语言本身很好上手</li>
+<li>Swift不仅可以作为编译型语言，也可以作为解释型语言使用，类似Python</li>
+<li>可以借助强大的Xcode编辑器进行代码补全、断点调试等等</li>
+<li>目前已经有多个支持Swift命令行开源项目，封装了参数解析，让命令行应用开发更加便捷</li>
+</ul>
+<p>对于我个人来说，在熟悉Swift的情况下，确实不想仅仅为了编写脚本而学习新的编程语言。</p>
+        
+          <p class="article-more-link">
+            <a href="/swift_command_line/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/swift_command_line/" data-id="ck2hbe6ym002wz1jban7sgadh" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/swift/" rel="tag">swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-MultiTouchBox" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/MultiTouchBox/" class="article-date">
+  <time datetime="2017-11-11T02:12:52.000Z" itemprop="datePublished">2017-11-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/MultiTouchBox/">傻瓜式多指交互图片裁剪框</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="故事概述"><a href="#故事概述" class="headerlink" title="故事概述"></a>故事概述</h2><p>说起来都是快两年前的故事了。由于产品迭代，需要优化图片裁剪功能，于是我找到了<a href="https://github.com/TimOliver/TOCropViewController" target="_blank" rel="noopener">TOCropViewController</a>开源库，虽然效果很赞，但是仍然不能满足产品经理对自家app的订制要求。为了在有限开发周期内做出新的效果，我也不得不在开源库的里直接修改源码，也利用休息时间给人家的库添了一些新特性，比如本来只支持单方向旋转的<code>TOCropView</code>，现在也支持双向旋转了。现在在这里写篇博客，打算总结下当时开发的技术经验。</p>
+        
+          <p class="article-more-link">
+            <a href="/MultiTouchBox/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/MultiTouchBox/" data-id="ck2hbe6y10026z1jb2w4q91tz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-BelowHeaderRefreshing" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/BelowHeaderRefreshing/" class="article-date">
+  <time datetime="2017-11-04T13:09:14.000Z" itemprop="datePublished">2017-11-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/BelowHeaderRefreshing/">iOS下拉刷新</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="设计概念"><a href="#设计概念" class="headerlink" title="设计概念"></a>设计概念</h2><p>今天总结一个小技巧：<code>HeaderRefresh</code>，意思是在Header下方出现下拉刷新的动画。</p>
+<p>一般常见实现下拉刷新的方法是使用<code>UITableView</code>+<code>MJRefresh</code>，效果就如<a href="https://github.com/CoderMJLee/MJRefresh" target="_blank" rel="noopener">MJRefresh</a>首页展示的样子，用户向下拉拽列表，然后从列表上面出现等待动画。如果给列表加上一个header，向下拉的过程中，refresh控件依然保持在列表最上面，也就是header的上方。</p>
+<p>这样对于一些app的设计来说，就显得很不友好。比如支付宝首页，首页上方是类似九宫格的布局，下面是用户信息的状态更新、商品推荐等，并且可以通过下拉的方式刷新状态和商品。既然下拉刷新的行为是跟下面的信息内容绑定在一起的，而下拉时的网络等待和刷新动画假如出现在首页九宫格顶端的话，那就是很糟的反馈。所以app开发者需要做的就是，将传统的顶部下拉实现为从header底部下拉刷新。</p>
+        
+          <p class="article-more-link">
+            <a href="/BelowHeaderRefreshing/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/BelowHeaderRefreshing/" data-id="ck2hbe6va0001z1jbhp6c61hp" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-webkit-for-js-and-objc" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/webkit-for-js-and-objc/" class="article-date">
+  <time datetime="2017-08-11T10:42:42.000Z" itemprop="datePublished">2017-08-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/webkit-for-js-and-objc/">WKWebView中的JavaScript交互</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>由于业务需要，最近开发并总结了关于<code>JavaScript</code>和原生app的交互的一些实现方式。</p>
+<p>通常情况下，我们加载一个网页，然后使用<code>WKWebView</code>展示它。<code>WKWebView</code>自开发以来就提供了丰富的js和原生的交互能力，比如为了能够获取网页中的一些内容，我们可以使用原生方法执行<code>JavaScript</code>代码来实现信息抓取，然后再将结果回传到原生环境。</p>
+<p>至于js如何主动调用原生方法，并携带上原生app需要的结果，这里总结了以下几种方式：</p>
+<ul>
+<li>通过截获js的跳转请求，进入原生回调</li>
+<li>通过执行js函数得到返回结果，回到原生方法</li>
+<li>通过js脚本注入<ul>
+<li>官方支持：直接注入带有消息发送机制的js脚本</li>
+<li>间接注入带有脚本URL的标签，方便js代码的动态修改</li>
+</ul>
+</li>
+</ul>
+        
+          <p class="article-more-link">
+            <a href="/webkit-for-js-and-objc/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/webkit-for-js-and-objc/" data-id="ck2hbe6zc003mz1jb9850906u" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/" rel="tag">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-fastlane-gym" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/fastlane-gym/" class="article-date">
+  <time datetime="2017-05-06T07:37:28.000Z" itemprop="datePublished">2017-05-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/fastlane-gym/">gym</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>gym用来做项目打包，打包后生成<code>xxx.ipa</code>和<code>xxx.app.dSYM.zip</code>文件。</p>
+        
+          <p class="article-more-link">
+            <a href="/fastlane-gym/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/fastlane-gym/" data-id="ck2hbe6vx000rz1jb7h44017r" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

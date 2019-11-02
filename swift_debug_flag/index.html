@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Swift的DEBUG标记 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="经历了一些Xcode配置挫折以后，我于是总结了一下：  Swift中如何替代宏定义 如何正确设置Swift调试环境下DEBUG条件编译，包括命令行和Xcode。">
+<meta name="keywords" content="macro,#if debug">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift的DEBUG标记">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;swift_debug_flag&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="经历了一些Xcode配置挫折以后，我于是总结了一下：  Swift中如何替代宏定义 如何正确设置Swift调试环境下DEBUG条件编译，包括命令行和Xcode。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.948Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-swift_debug_flag" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/swift_debug_flag/" class="article-date">
+  <time datetime="2018-02-17T03:09:05.000Z" itemprop="datePublished">2018-02-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Swift的DEBUG标记
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>经历了一些Xcode配置挫折以后，我于是总结了一下：</p>
+<ol>
+<li>Swift中如何替代宏定义</li>
+<li>如何正确设置Swift调试环境下<code>DEBUG</code>条件编译，包括<code>命令行</code>和<code>Xcode</code>。</li>
+</ol>
+<a id="more"></a>
+
+<h2 id="宏定义替代方案"><a href="#宏定义替代方案" class="headerlink" title="宏定义替代方案"></a>宏定义替代方案</h2><p>自Swift诞生以来，就不具备预编译的特性，也不可以实现C语言中的宏定义<code>#define DEBUG</code>。虽然宏定义有很多优点，比如能够实现复杂代码的简化功效，这个<a href="https://github.com/jspahrsummers/libextobjc" target="_blank" rel="noopener">libextobic</a>的Objective-C扩展库已经把宏特性发挥到极致了，比如iOS开发中常见的<code>@weakify</code>,<code>@strongify</code>。但宏定义缺点是无法断点调试，比如定义一些<a href="https://github.com/jspahrsummers/libextobjc/blob/master/extobjc/EXTADT.h" target="_blank" rel="noopener">复杂的代码段</a>，注意里面带下滑线的都是宏啊，这代码要是维护更新的话，感觉不是一般程序员愿意接受的。Swift文档中对于如何替代宏定义，苹果推荐使用定义全局变量的方法，像<code>#define HELLO_WORLD 1</code>就可以写成<code>let HELLO_WORLD = 1</code>。</p>
+<h2 id="条件编译"><a href="#条件编译" class="headerlink" title="条件编译"></a>条件编译</h2><p>即便没有了宏定义，Swift的项目中还是允许使用<code>条件编译</code>的语句块。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#if DEBUG</span><br><span class="line">    print(&quot;Do something.&quot;)</span><br><span class="line">#else</span><br><span class="line">    print(&quot;Do other things.&quot;)</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+
+<p>Swift项目里的<code>DEBUG</code>不再是宏定义了，而是事先定义好的一个编译条件标记，可以用<code>-D &lt;标记&gt;</code>的格式进行配置，比如定义了<code>-D DEBUG</code>的话，就会编译<code>#if DEBUG</code>条件语句块中的代码。这样就能使用类似宏定义的各种条件标记了，比如<code>#if HELLO_WORLD</code>等等。Swift环境也自带了不少默认标记：</p>
+<ul>
+<li><code>os()</code>指定系统，比如<code>#if os(Linux)</code>，参数包括<code>macOS, iOS, watchOS, tvOS, Linux</code></li>
+<li><code>arch()</code>指定架构，参数包括<code>i386, x86_64, arm, arm64</code></li>
+<li><code>swift()</code>，指定swift版本号，比如<code>#if swift(&gt;=4.0)</code></li>
+</ul>
+<h3 id="配置方法"><a href="#配置方法" class="headerlink" title="配置方法"></a>配置方法</h3><h4 id="命令行"><a href="#命令行" class="headerlink" title="命令行"></a>命令行</h4><p>使用命令行进行编译Swift项目的话，需要自带编译参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">swift build -Xswiftc &quot;-D&quot; -Xswiftc &quot;DEBUG&quot;</span><br></pre></td></tr></table></figure>
+
+<p>上面的<code>-Xswiftc</code>目的是把<code>-D DEBUG</code>标记传递给Swift编译器，以便顺利编译<code>#if DEBUG</code>指定的代码块。问题是写起来有点麻烦，每次命令编译都不能忘记加上参数，而且运行<code>swift run</code>,<code>swift test</code>也是同理。解决忘带参数的问题，我个人推荐使用脚本来执行命令，事先定义好命令的完整格式。假如配合了docker的话，也可以分别定义<code>Dockerfile-debug</code>和<code>Dockerfile-release</code>来执行不同的<code>swift build</code>操作。</p>
+<h4 id="Xcode"><a href="#Xcode" class="headerlink" title="Xcode"></a>Xcode</h4><p>到目前为止，我网上找的大多数Xcode配置纯Swift项目的条件编译是这样的：</p>
+<ol>
+<li>选择project（或者相应target）</li>
+<li>选择Build Settings</li>
+<li>搜索Swift Compiler - Custom Flags</li>
+<li>找到Other Swift Flags，在Debug那里添加<code>-D DEBUG</code>或者<code>-DDEBUG</code></li>
+</ol>
+<p>结果确“屡试不爽”，于是继续寻求解决方案。后来了解到上述方案可能只适用于<code>Xcode 8.0</code>以下的版本，而之后Xcode特别加入了<code>SWIFT_ACTIVE_COMPILATION_CONDITIONS</code>的选项，专门用于传递条件编译中使用到的标记，于是上面的第4个步骤改为：找到<code>Active Compilation Conditions</code>，在Debug那里添加<code>DEBUG</code>标记，前面不要加”-D”。然后让项目在Debug环境中重新run一下，于是项目中的<code>#if DEBUG</code>代码段就被激活了（高亮效果）。</p>
+<p>如果是<code>Swift</code>与<code>Objective-C</code>的混编项目，还需要专门为<code>Objective-C</code>设置预编译环境下的参数。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://developer.apple.com/library/content/documentation/Swift/Conceptual/BuildingCocoaApps/InteractingWithCAPIs.html#//apple_ref/doc/uid/TP40014216-CH8-ID34" target="_blank" rel="noopener">Interacting with C APIs</a></li>
+<li><a href="https://stackoverflow.com/questions/24003291/ifdef-replacement-in-the-swift-language/36502874#36502874" target="_blank" rel="noopener">#ifdef replacement in the Swift language</a></li>
+<li><a href="https://miqu.me/blog/2016/07/31/xcode-8-new-build-settings-and-analyzer-improvements/" target="_blank" rel="noopener">Xcode 8: New Build Settings and Analyzer Improvements</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/swift_debug_flag/" data-id="ck2hbe6x0001kz1jbbaro5wxb" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/docker/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Docker入门解读
+        
+      </div>
+    </a>
+  
+  
+    <a href="/mysql_unicode/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">MySQL支持Unicode</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

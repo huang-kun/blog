@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Alamofire 4 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="总结一下最近学习Alamofire 4的源码笔记。">
+<meta name="keywords" content="Networking">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Alamofire 4">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;Alamofire4&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="总结一下最近学习Alamofire 4的源码笔记。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:25:25.200Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Alamofire4" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/Alamofire4/" class="article-date">
+  <time datetime="2019-11-02T04:24:57.000Z" itemprop="datePublished">2019-11-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Alamofire 4
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>总结一下最近学习<code>Alamofire 4</code>的源码笔记。</p>
+<a id="more"></a>
+
+<h2 id="Parameter-Encoding"><a href="#Parameter-Encoding" class="headerlink" title="Parameter Encoding"></a>Parameter Encoding</h2><p>我们通常会将请求参数以字典的格式传入到AF的方法中，比如<code>{&quot;id&quot;:&quot;123&quot;, &quot;name&quot;: &quot;苹果&quot;}</code>，然后AF会将参数进行编码成为<code>id=123&amp;name=%E8%8B%B9%E6%9E%9C</code>的格式并组装到<code>URLRequest</code>中去。如果请求HTTP方法为<code>GET</code>,<code>POST</code>,<code>DELETE</code>，那么AF会默认将编码后的参数字符串追加到URL后面，对于其他的方法，比如最常见的<code>POST</code>，AF会将它转化成Data并添加在请求的body中。</p>
+<p>除了上述常见的<code>foo=bar</code>分别作为<code>key</code>和<code>value</code>的情况外，AF也支持集合类型的编码，比如<code>foo[]=1&amp;foo[]=2</code>表示数组，或者<code>foo[bar]=baz</code>表示字典。</p>
+<p>这些都是<code>URLEncoding</code>实现的特性，<code>URLEncoding</code>具体负责三件事：首先将参数编码为<code>key1=value1&amp;key2=value2</code>的query形式，然后把参数中ascii码以外的字符进行URL编码(Percent-Encoding)，最后根据HTTP方法（是<code>GET</code>还是<code>POST</code>）来决定把参数放在请求的什么位置。</p>
+<p><code>URLEncoding</code>遵循了<code>ParameterEncoding</code>协议，即支持参数编码只需要实现一个<code>encode()</code>方法，返回一个带有参数的<code>URLRequest</code>。其他实现了该协议的还有<code>JSONEncoding</code>和<code>PropertyListEncoding</code>，分别支持将参数编码成json或者xml。</p>
+<h2 id="SessionDelegate"><a href="#SessionDelegate" class="headerlink" title="SessionDelegate"></a>SessionDelegate</h2><p>SessionDelegate是专门用来处理网络回调代理的类，通常对某些回调给出了默认的方案，比如：</p>
+<ul>
+<li>进行<code>https</code>证书校验</li>
+<li>发送网络成功通知</li>
+<li>网络结果校验(validation)</li>
+<li>网络失败重试(Retrier)</li>
+</ul>
+<p>该类还实现了一个<code>subscript</code>下标方法，将<code>task</code>和<code>request</code>用字典的key/value的形式关联起来，以便于网络回调的时候，通过作为task的key来找回当初请求的request对象。</p>
+<h2 id="Request-Data-Download-Upload-Stream"><a href="#Request-Data-Download-Upload-Stream" class="headerlink" title="Request (Data/Download/Upload/Stream)"></a>Request (Data/Download/Upload/Stream)</h2><p>一个集合了<code>request</code>, <code>response</code>, <code>session</code>, <code>session task</code>的综合体，同时也管理task的状态，作为子类的DataRequest/DownloadRequest/UploadRequest/StreamRequest，分别实现了TaskConvertible协议，即创建DataTask/DownloadTask/UploadTask/streamTask的方法。</p>
+<h2 id="Response"><a href="#Response" class="headerlink" title="Response"></a>Response</h2><p>通过创建一个<code>Response</code>数据结构将内容保存起来，稍后获得请求结果在执行。</p>
+<h2 id="Response-Serialization"><a href="#Response-Serialization" class="headerlink" title="Response Serialization"></a>Response Serialization</h2><p>对于响应的解析，是通过调用比如<code>responseJSON()</code>或者<code>responseString()</code>将响应解析成对应的数据类型。这里也是通过函数式的封装，将真正的解析方法存放在闭包中，然后将闭包加入到一个用于响应解析的串行队列<code>NSOperationQueue</code>中，这个队列在创建的时候就默认设置成了暂缓状态<code>suspended</code>，所以加入任务后不会立即执行。当收到<code>urlSession(task:didCompleteWithError:)</code>代理回调时，再将该队列取消暂缓，于是就执行了之前保存在队列里的解析方法。</p>
+<p>Response Serialization也分别声明了<code>DataResponseSerializerProtocol</code>和<code>DownloadResponseSerializerProtocol</code>来指定不同响应数据的解析，所以也提供了很多的拓展性。</p>
+<h2 id="Validate"><a href="#Validate" class="headerlink" title="Validate"></a>Validate</h2><p>Validate是AF的校验机制，即收到网络回调结果后，进行结果校验，如果满足条件则通过，否则返回错误。调用validate()方法会默认校验两项指标：</p>
+<ol>
+<li>status code码：在200到300之间，则表示服务器返回成功，否则返回错误</li>
+<li>content-type：如果收到服务器返回的结果不符合预想的content-type，则返回错误</li>
+</ol>
+<p>Validate实现最大的特色还是函数式的封装，允许使用者可以进行<code>request.validate(statusCode: 200..&lt;300).validate(contentType: [&quot;application/json&quot;])</code>这种链式调用。validate()方法返回Self，并且将真正的校验方法放在参数closure中，这个closure参数在赋值后就被保存在了validations数组中。当收到<code>urlSession(task:didCompleteWithError:)</code>回调代理时，通过调用<code>request.validations.forEach { $0() }</code>来执行closure的校验。如果校验失败，那么直接将结果设置到delegate.error并将错误结果传递到最终的业务层去处理。</p>
+<h2 id="RequestAdapter"><a href="#RequestAdapter" class="headerlink" title="RequestAdapter"></a>RequestAdapter</h2><p>这是个适配<code>URLRequest</code>的协议，会在生成用于请求的task对象前允许对<code>URLRequest</code>进行最终的修改，比如可以修改请求headers，添加Cookie/token/其他全局配置之类的事情等等。</p>
+<h2 id="RequestRetrier"><a href="#RequestRetrier" class="headerlink" title="RequestRetrier"></a>RequestRetrier</h2><p>这个协议用来重新发送之前失败的网络请求。实现这个协议的方法可以告诉AF哪些请求可以根据特定的错误进行重试，然后在实现方法中调用闭包来决定是否重试，以及重新请求的延迟时间。</p>
+<h2 id="MultipartFormData"><a href="#MultipartFormData" class="headerlink" title="MultipartFormData"></a>MultipartFormData</h2><p>该类用来处理<code>multipart/form-data</code>多表单上传，将上传的数据转换成以下这种格式，然后放进http body里：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Content-Type: multipart/form-data; boundary=AaB03x</span><br><span class="line"></span><br><span class="line">--AaB03x</span><br><span class="line">Content-Disposition: form-data; name=&quot;submit-name&quot;</span><br><span class="line"></span><br><span class="line">Larry</span><br><span class="line">--AaB03x</span><br><span class="line">Content-Disposition: form-data; name=&quot;files&quot;; filename=&quot;file1.txt&quot;</span><br><span class="line">Content-Type: text/plain</span><br><span class="line"></span><br><span class="line">... contents of file1.txt ...</span><br><span class="line">--AaB03x--</span><br></pre></td></tr></table></figure>
+
+<p>在调用上传的方法时，如果整个<code>MultipartFormData</code>数据并不大，就可以调用<code>encode</code>方法将所有信息编码成一个Data对象，并将其上传；如果数据很大，就需要调用<code>writeEncodedData(to:)</code>方法将数据写入到文件，然后上传文件。</p>
+<h2 id="后台下载"><a href="#后台下载" class="headerlink" title="后台下载"></a>后台下载</h2><ol>
+<li>创建background session来下载文件，这个session调用下载方法后，不要被释放掉，建议用单例</li>
+<li>在AppDelegate中实现handleEventsForBackgroundURLSession,用AF的backgroundSessionManager的backgroundCompletionHandler = completion</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/Alamofire4/" data-id="ck2hbe6v10000z1jb5f7759hi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/binary-search-for-UICollectionViewLayout/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">使用二分搜索来提速UICollectionView</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

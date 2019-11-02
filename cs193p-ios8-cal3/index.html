@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>斯坦福CS193p-iOS8课程作业之计算器3 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本篇是计算器作业系列的第三章。这里需要实现的就是：在之前做好的计算器中输入一个一元运算函数的表达式，然后绘制成为函数图形。   我们可以假象现在有个“y = 2x+1”的表达式，那么如何绘制这个函数呢？">
+<meta name="keywords" content="ios,cs193p,swift">
+<meta property="og:type" content="article">
+<meta property="og:title" content="斯坦福CS193p-iOS8课程作业之计算器3">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-cal3&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="本篇是计算器作业系列的第三章。这里需要实现的就是：在之前做好的计算器中输入一个一元运算函数的表达式，然后绘制成为函数图形。   我们可以假象现在有个“y = 2x+1”的表达式，那么如何绘制这个函数呢？">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-cal3&#x2F;c1.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-cal3&#x2F;c2.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-cal3&#x2F;c3.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-cal3&#x2F;c4.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-cal3&#x2F;c5.png">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.901Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-cal3&#x2F;c1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-cs193p-ios8-cal3" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/cs193p-ios8-cal3/" class="article-date">
+  <time datetime="2015-02-20T09:32:26.000Z" itemprop="datePublished">2015-02-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      斯坦福CS193p-iOS8课程作业之计算器3
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本篇是计算器作业系列的第三章。这里需要实现的就是：在之前做好的计算器中输入一个一元运算函数的表达式，然后绘制成为函数图形。</p>
+<img src="/cs193p-ios8-cal3/c1.png" class="">
+
+<p>我们可以假象现在有个“y = 2x+1”的表达式，那么如何绘制这个函数呢？</p>
+<a id="more"></a>
+
+<p>环境：iOS 8, Swift<br>作业：Programming_ Project 3.pdf (Assignment 3)<br>资源：<a href="https://github.com/vojtamolda/cs193p" target="_blank" rel="noopener">点击进入</a></p>
+<h4 id="确定思路"><a href="#确定思路" class="headerlink" title="确定思路"></a>确定思路</h4><p>记得上初中几何课的时候，我经常拿着铅笔尺子圆规做图。比如画函数y = 2x+1，那么先绘出x轴和y轴，标好单位。因为这个函数是一条直线，那么取两个点就可以定位了：当x = 0时y = 1，当x = -0.5时y = 0，然后连接点(-0.5,0)和(0,1)，就画出了函数图。</p>
+<p>现在这里的要求是用程序来做函数图，对于没有尝试过的程序员来说，可能一开始不知道怎么下手，像我一样。其实，根本不需要把过程想的多么复杂，本质就是上几何课时候的画图技巧。在UIView中，绘制一个一元函数就是绘制一连串的CGPoint(x, y)，其中x与y的关系可以通过函数表达式来确立，从屏幕最左端x = 0开始，找到对应y的取值，然后一直到屏幕右端（比如x = 340），遍历每一个x，并找到对应y的取值，组成CGPoint，再把每个点连成线，就完成了绘制。需要注意的是：UIView的坐标和画几何图的坐标位置不同，需要进行一个转换，UIView的坐标原点在左上角，而我们绘制的坐标轴位于屏幕正中心。所以这里需要建立一个转换，实现坐标原点的平移和y轴的反转，即从屏幕最左侧到最右侧的取值(0&lt;px&lt;340)，需要转换为函数中的x取值，比如(-3&lt;fx&lt;3)，然后把函数x值带入函数y = 2x+1获取y的值，再将y转换为屏幕上的py；由于不同屏幕的分辨率不同， 为了兼顾Retina屏幕，需要遍历每个pixel，而非CGPoint</p>
+<h4 id="建立坐标轴"><a href="#建立坐标轴" class="headerlink" title="建立坐标轴"></a>建立坐标轴</h4><p>首先打开Programming_Project 3.pdf(Assignment 3)，点击首页的超链接：AxesDrawer class，然后即可下载坐标轴AxesDrawer.swift（在2011年的课程中提供的是objective c版的.h/.m，如果习惯于objective c的朋友，可以寻找老版本或者在项目中自行兼容桥接即可），其中只需要使用一个方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drawAxesInRect(bounds: CGRect, origin: CGPoint, pointsPerUnit: CGFloat)</span><br></pre></td></tr></table></figure>
+
+<p>这个API表示只要传入需要绘制坐标轴的区域、中心位置和单位，即可绘制出一个坐标轴。因此创建一个UIView的子类GraphView，在drawRect中调用该方法，然后把GraphView的中心设为坐标轴的原点，GraphView的bounds设为这里的bounds参数，pointsPerUnit就是你愿意让多少points作为一个单位长度，比如传入50，那么以iPhone 4s的屏幕尺寸，那么就能显示x轴从-3到3，y轴从-4到4的单位。（也可以允许修改坐标轴的颜色，文件里默认为蓝色，而我自行修改为灰色，然后打算用蓝色来展示函数曲线）</p>
+<h4 id="坐标转换"><a href="#坐标转换" class="headerlink" title="坐标转换"></a>坐标转换</h4><p>以下的center是UIView的center，scale表示pointsPerUnit，要保证与AxesDrawer的pointsPerUnit一致，即保证绘制的函数图的比例能够正好匹配绘制的坐标图。如果没有这里的scale，你可以试一下绘制y = sin(x)，比例不等的效果非常明显。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">private func convertedFormulaXFromViewX(vx: CGFloat) -&gt; Float &#123;</span><br><span class="line">    return Float((vx - centerPoint.x) / scale)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private func convertedFormulaYFromViewY(vy: CGFloat) -&gt; Float &#123;</span><br><span class="line">    return Float((-vy + centerPoint.y) / scale)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private func convertedViewXFromFormulaX(fx: Float) -&gt; CGFloat &#123;</span><br><span class="line">    return CGFloat(fx) * scale + centerPoint.x</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private func convertedViewYFromFormulaY(fy: Float) -&gt; CGFloat &#123;</span><br><span class="line">    return CGFloat(-fy) * scale + centerPoint.y</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="练习绘制y-2x-1函数曲线"><a href="#练习绘制y-2x-1函数曲线" class="headerlink" title="练习绘制y = 2x+1函数曲线"></a>练习绘制y = 2x+1函数曲线</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">override func drawRect(rect: CGRect) &#123;</span><br><span class="line"></span><br><span class="line">// 绘制坐标轴</span><br><span class="line">axesDrawer.drawAxesInRect(rect, origin: convertPoint(center, fromView: superview), pointsPerUnit: scale)</span><br><span class="line"></span><br><span class="line">// 绘制函数</span><br><span class="line">let path = UIBezierPath()</span><br><span class="line">    var p = getDrawingPointForHorizontalPosition(0.0)</span><br><span class="line">    path.moveToPoint(p)</span><br><span class="line">    </span><br><span class="line">    for var px: CGFloat = 0.0; px &lt;= bounds.size.width; px += (1.0/contentScaleFactor) &#123;</span><br><span class="line">        p = getDrawingPointForHorizontalPosition(px)</span><br><span class="line">        path.addLineToPoint(p)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    UIColor.blueColor().set()</span><br><span class="line">    path.lineWidth = 1.0</span><br><span class="line">    path.stroke()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的contentScaleFactor是UIView的表示pixel的一个属性，比如iPhone 5s的contentScaleFactor为2.0，说明一个绘制的point中含有2个pixel.</p>
+<p>上面的getDrawingPointForHorizontalPosition(px: CGFloat)方法封装了在屏幕中的px转换为函数x，然后获得取值再转换为绘制在屏幕上的点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private func getDrawingPointForHorizontalPosition(px: CGFloat) -&gt; CGPoint &#123;</span><br><span class="line">    let fx = convertedFormulaXFromViewX(px)</span><br><span class="line">    let fy = 2.0 * fx + 1.0</span><br><span class="line">    let py = convertedViewYFromFormulaY(fy)</span><br><span class="line">    return CGPointMake(px, py)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="/cs193p-ios8-cal3/c2.png" class="">
+
+<p>注意：这里只是简单的练习，实际上需要考虑函数x的取值范围，比如y = 1/x，x不可为零，那么需要处理返回的point有可能是nil的情况。</p>
+<h4 id="获取函数表达式"><a href="#获取函数表达式" class="headerlink" title="获取函数表达式"></a>获取函数表达式</h4><p>最终绘制的函数表达式来自于前面两次的计算器作业。UIView是MVC中的V，因此不能存储绘图的数据，所以需要一个delegate来获得绘图的数据，即函数表达式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">protocol GraphViewDelegate &#123;</span><br><span class="line">    func graphView(graphView: GraphView, getValueFromX x: Float) -&gt; Float</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在GraphView中加入一个delegate属性，考虑到避免出现引用循环的情况(Memory Cycle)，这里需要指明weak</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">weak var delegate: GraphViewDelegate?</span><br></pre></td></tr></table></figure>
+
+<p>这时候会出现警告：’weak’cannot be applied to non-class type ‘GraphViewDelegate’<br>解决方法：在GraphViewDelegate后面加上class关键字，表明该协议必须由类来实现。从而消除警告。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protocol GraphViewDelegate : class &#123;..&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后替代<code>let fy = 2.0 * fx + 1.0</code>为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let fy = delegate?.graphView(self, getValueFromX: fx)</span><br></pre></td></tr></table></figure>
+
+<p>最后到GraphViewController中，设置graphView.delegate = self，实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func graphView(GraphView, getValueFromX x: Float) -&gt; Float &#123;</span><br><span class="line">    brain.variableValues[&quot;m&quot;] = Double(x)</span><br><span class="line">    returnFloat(brain.evaluate() ?? 0)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中brain出自于上次的斯坦福cs193p计算器作业，现在需要在这里友情客串。它就是MVC中的M，提供相关的绘图数据，因为在brain的stack中，如果有存在变量x的话（或者m），那么就赋值给变量，然后通过evaluate()计算得到y的结果。</p>
+<h4 id="展示函数表达式"><a href="#展示函数表达式" class="headerlink" title="展示函数表达式"></a>展示函数表达式</h4><p>GraphViewController是由点击计算器的一个按钮Graph而出现并显示函数图像，是一个新的MVC，那么他不仅要绘制函数，同时需要在屏幕某个地方展示函数的表达式，以便用户知道当前绘制的是什么函数。</p>
+<p>需要解决的问题就是，如何将计算器中Stack里的各种运算数和运算符转化为可储存和解析的类型呢(Property List)？之前的计算器中，stack里面储存的是Op类型，op是enum，并在之前的项目中实现了Printable协议，因此可以转换为string，并且CalculatorBrain中添加了一个program: AnyObject，这个就是将opStack转化为property list的数据结构。具体的实现方法在视频中已经给出了方案(视频5. Objective-C Compatibility, Property List, Views.mp4)。这个封装好的program就可以发送给其他类使用，不过如何能把他解析成表达式呢？可以建议在CalculatorBrain中增加一个方法（也可以是类方法）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class func descriptionOfProgram(program: PropertyList) -&gt; String &#123;</span><br><span class="line">    let brain = CalculatorBrain()</span><br><span class="line">    brain.program = program</span><br><span class="line">    return brain.description</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过调用之前写好的方法，将program解析称为表达式，然后在GraphViewController中接收解析的结果，比如sin(m)， 然后在前面加上“y = ”就可以在屏幕上显示一个完整的函数表达式；需要特别注意的是，如果解析的表达式结果为“sin(m), m+2”，说明此时计算器的stack里面有两个独立的表达式，那么绘制的函数自然是最近期输入的表达式（即后者），但是不能给用户展示“y = sin(m), m+2”，需要改为”y = m+2”，如果用户再次输入乘号，就显示“y = sin(m)x(m+2)”并绘出函数。这里可以运用componentsSeparatedByString()把NSString以逗号为分隔符，分割成数组，然后返回最后的那个。</p>
+<img src="/cs193p-ios8-cal3/c3.png" class="">
+<img src="/cs193p-ios8-cal3/c4.png" class="">
+<img src="/cs193p-ios8-cal3/c5.png" class="">
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/cs193p-ios8-cal3/" data-id="ck2hbe6y7002bz1jbemuv9bjc" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/swift/" rel="tag">swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/ios-certificate/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          iOS开发者证书的申请到安装（多图）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/cs193p-ios8-cal2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">斯坦福CS193p-iOS8课程作业之计算器2</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

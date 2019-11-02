@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>滑动撤销键盘 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原来撤销键盘的方法还可以更优雅一点。 最近我在处理UITextView的键盘撤销问题上，听取了产品负责人提出的意见。比如现在有这么一个需求：进入一个界面，在手机屏幕上方展示一个文本编辑框(UITextView)，点击文本框于是弹出键盘，进行文字输入。但是iOS的默认键盘有一些不友好的设计：没有撤销按钮。所以当键盘弹出后，只有通过点击文本框以外的背景，然后撤销键盘，这通常是用户熟悉的让键盘撤销的交互">
+<meta name="keywords" content="keyboard,UIScrollView">
+<meta property="og:type" content="article">
+<meta property="og:title" content="滑动撤销键盘">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;scroll-to-dismiss-keyboard&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="原来撤销键盘的方法还可以更优雅一点。 最近我在处理UITextView的键盘撤销问题上，听取了产品负责人提出的意见。比如现在有这么一个需求：进入一个界面，在手机屏幕上方展示一个文本编辑框(UITextView)，点击文本框于是弹出键盘，进行文字输入。但是iOS的默认键盘有一些不友好的设计：没有撤销按钮。所以当键盘弹出后，只有通过点击文本框以外的背景，然后撤销键盘，这通常是用户熟悉的让键盘撤销的交互">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;scroll-to-dismiss-keyboard&#x2F;awkward.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;scroll-to-dismiss-keyboard&#x2F;flip_up.gif">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;scroll-to-dismiss-keyboard&#x2F;flip_down.gif">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.943Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;scroll-to-dismiss-keyboard&#x2F;awkward.png">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-scroll-to-dismiss-keyboard" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/scroll-to-dismiss-keyboard/" class="article-date">
+  <time datetime="2016-12-11T11:39:34.000Z" itemprop="datePublished">2016-12-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      滑动撤销键盘
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原来撤销键盘的方法还可以更优雅一点。</p>
+<p>最近我在处理UITextView的键盘撤销问题上，听取了产品负责人提出的意见。比如现在有这么一个需求：进入一个界面，在手机屏幕上方展示一个文本编辑框(UITextView)，点击文本框于是弹出键盘，进行文字输入。但是iOS的默认键盘有一些不友好的设计：没有撤销按钮。所以当键盘弹出后，只有通过点击文本框以外的背景，然后撤销键盘，这通常是用户熟悉的让键盘撤销的交互体验。</p>
+<p>现在正好遇上一个尴尬的场景，在下图中，如果让用户通过点击文本框以外的灰色区域来撤销键盘的话，就成了很糟糕的体验，因为基本上没有多少可点击的区域留给用户。</p>
+<a id="more"></a>
+
+<img src="/scroll-to-dismiss-keyboard/awkward.png" class="" title="This is an example image">
+
+<p>我自己写了一下代码：</p>
+<ul>
+<li>这里借助了开源库<code>Masonry</code>来进行自动布局</li>
+<li>创建了tap手势，点击self.view来撤销键盘</li>
+<li>通过实现<code>UIGestureRecognizerDelegate</code>的方法<code>gestureRecognizerShouldBegin:</code>，确保只有在点击文字编辑区域以外的地方，才允许撤销键盘</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    </span><br><span class="line">    self.view.backgroundColor = UIColor.lightGrayColor;</span><br><span class="line">    self.automaticallyAdjustsScrollViewInsets = NO;</span><br><span class="line">    </span><br><span class="line">    self.textView = [UITextView new];</span><br><span class="line">    self.textView.backgroundColor = UIColor.whiteColor;</span><br><span class="line">    self.textView.font = [UIFont systemFontOfSize:22];</span><br><span class="line">    self.textView.text = @&quot;Hello World&quot;;</span><br><span class="line">    [self.view addSubview:self.textView];</span><br><span class="line">    </span><br><span class="line">    [self.textView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">        make.top.equalTo(self.view.mas_top).with.offset(64 + 10);</span><br><span class="line">        make.left.equalTo(self.view.mas_left).with.offset(10);</span><br><span class="line">        make.right.equalTo(self.view.mas_right).with.offset(-10);</span><br><span class="line">        make.height.mas_equalTo(UIScreen.mainScreen.bounds.size.height / 2 - 64);</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)];</span><br><span class="line">    tap.delegate = self;</span><br><span class="line">    [self.view addGestureRecognizer:tap];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)dismissKeyboard &#123;</span><br><span class="line">    if (self.textView.isFirstResponder) &#123;</span><br><span class="line">        [self.textView resignFirstResponder];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer &#123;</span><br><span class="line">    UIView *gestureView = [gestureRecognizer view];</span><br><span class="line">    CGPoint touchPoint = [gestureRecognizer locationInView:gestureView];</span><br><span class="line">    CGRect textViewFrame = [gestureView convertRect:self.textView.frame fromView:self.textView.superview];</span><br><span class="line">    if (CGRectContainsPoint(textViewFrame, touchPoint)) &#123;</span><br><span class="line">        return NO;</span><br><span class="line">    &#125;</span><br><span class="line">    return YES;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来聊一聊解决方案。</p>
+<p>对于处理撤销键盘的问题，可以通过更换键盘类型来设置，比如<code>UIKeyboardTypeWebSearch</code>，这样就将键盘中的回车键替换成了颜色醒目的“完成”按钮（英文是Go），通过点击“完成”来撤销键盘。这个方法后来被证实只能用于文字输入栏(UITextField)，而对于需要处理多行编辑的大量文本时，就需要换行的需求，所以回车键的存在必不可少，应该不能被替代。</p>
+<p>最终，我还是采用了“滑动撤销键盘”的方法，让用户在点击文本框的时候弹出键盘，并且在滑动键盘以外的区域让其撤销。改造方法其实并不复杂：</p>
+<ul>
+<li>在视图层级中添加<code>UIScrollView</code>，并且保证在没有<code>contentSize</code>的情况下仅能够上下滑动</li>
+<li>实现<code>UIScrollViewDelegate</code>，在滑动中撤销键盘</li>
+<li>设置<code>textView.top == scrollView.top + offset</code>的约束</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    </span><br><span class="line">    self.view.backgroundColor = UIColor.lightGrayColor;</span><br><span class="line">    self.automaticallyAdjustsScrollViewInsets = NO;</span><br><span class="line">    </span><br><span class="line">    // 创建UIScrollView</span><br><span class="line">    self.scrollView = [UIScrollView new];</span><br><span class="line">    self.scrollView.delegate = self;</span><br><span class="line">    self.scrollView.alwaysBounceVertical = YES; // 在contentSize为0的情况下，依然允许scroll</span><br><span class="line">    [self.view addSubview:self.scrollView];</span><br><span class="line">    </span><br><span class="line">    [self.scrollView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(64, 0, 0, 0)); </span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    // 将UITextView添加到UIScrollView上方</span><br><span class="line">    self.textView = [UITextView new];</span><br><span class="line">    ...</span><br><span class="line">    [self.scrollView addSubview:self.textView];</span><br><span class="line">    </span><br><span class="line">    // 添加textView.top == scrollView.top + offset的约束</span><br><span class="line">    [self.textView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">        make.top.equalTo(self.scrollView.mas_top).with.offset(10); </span><br><span class="line">        make.left.equalTo(self.view.mas_left).with.offset(10);</span><br><span class="line">        make.right.equalTo(self.view.mas_right).with.offset(-10);</span><br><span class="line">        make.height.mas_equalTo(UIScreen.mainScreen.bounds.size.height / 2 - 64);</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">    UITapGestureRecognizer *tap = ...</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)scrollViewDidScroll:(UIScrollView *)scrollView &#123;</span><br><span class="line">    [self dismissKeyboard];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>于是撤销键盘的交互就变得很灵活了。</p>
+<img src="/scroll-to-dismiss-keyboard/flip_up.gif" class="" title="This is an example image">
+
+<p>这里我改一下约束，也可以使得textView固定在屏幕上方的位置，不与scrollView一起滑动。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 添加textView.top == self.view.top + offset的约束</span><br><span class="line">[self.textView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</span><br><span class="line">   make.top.equalTo(self.view.mas_top).with.offset(64 + 10); </span><br><span class="line">   make.left.equalTo(self.view.mas_left).with.offset(10);</span><br><span class="line">   make.right.equalTo(self.view.mas_right).with.offset(-10);</span><br><span class="line">   make.height.mas_equalTo(UIScreen.mainScreen.bounds.size.height / 2 - 64);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+
+<img src="/scroll-to-dismiss-keyboard/flip_down.gif" class="" title="This is an example image">
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/scroll-to-dismiss-keyboard/" data-id="ck2hbe6wv001hz1jb0ilm2k3j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/scale-like-button/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          增加按钮的可点击区域
+        
+      </div>
+    </a>
+  
+  
+    <a href="/Hexo-Setup/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hexo搭建博客总结</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

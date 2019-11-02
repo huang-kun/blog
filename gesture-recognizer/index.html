@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>iOS手势交互 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="需要知道的事 在view添加的gesture中，可以通过这个gesture.view找到相关的view UIImageView是仅有的几个UIKit子类中的特例，因为他默认userInteractionEnabled = NO，所以在它上面应用手势识别之前需要确保修改这个默认。 通过locationInView:的方法可以得到从gesture探测到的手指触屏坐标，但如果是多个手指触到的屏幕呢？那么">
+<meta name="keywords" content="ios">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS手势交互">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;gesture-recognizer&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="需要知道的事 在view添加的gesture中，可以通过这个gesture.view找到相关的view UIImageView是仅有的几个UIKit子类中的特例，因为他默认userInteractionEnabled = NO，所以在它上面应用手势识别之前需要确保修改这个默认。 通过locationInView:的方法可以得到从gesture探测到的手指触屏坐标，但如果是多个手指触到的屏幕呢？那么">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.915Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-gesture-recognizer" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/gesture-recognizer/" class="article-date">
+  <time datetime="2015-05-19T11:54:01.000Z" itemprop="datePublished">2015-05-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      iOS手势交互
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="需要知道的事"><a href="#需要知道的事" class="headerlink" title="需要知道的事"></a>需要知道的事</h2><ul>
+<li>在view添加的gesture中，可以通过这个gesture.view找到相关的view</li>
+<li>UIImageView是仅有的几个UIKit子类中的特例，因为他默认userInteractionEnabled = NO，所以在它上面应用手势识别之前需要确保修改这个默认。</li>
+<li>通过locationInView:的方法可以得到从gesture探测到的手指触屏坐标，但如果是多个手指触到的屏幕呢？那么返回的坐标点是这几个手指的中心。比如两个手指的话，就是两个指尖距离的中点。或者可以通过locationOfTouch:inView:来获得具体每根手指的触屏坐标。</li>
+<li>对于tap, swipe等手势的状态只能响应StateRecognized，而不会响应StateBegan, Changed, Ended.</li>
+<li>关于StateCancel的状态是由于系统放弃对目前手势的识别，具体情况有：突然来电话，或当设备靠近脸部的时候等。因此要处理好Cancel或Fail的状态。</li>
+<li>pinch和rotation手势是根据view的center作为轴心进行缩放或旋转，而不会把两个手指间的距离中点作为轴心。但是也可以修改的，view.layer有个anchorPoint的属性基本上代表了view的轴心，而两手指间的中点可以通过locationInView:获得，这样就可以通过修改view的轴心为两手指的中点从而改变效果。</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="响应"><a href="#响应" class="headerlink" title="响应"></a>响应</h2><p>没有添加GestureRecognizer的view不会接受这个GestureRecognizer</p>
+<p>一个view添加了多个GestureRecognizer的话，每个GestureRecognizer不会知道其他GestureRecognizer，如果在识别中符合其中一个手势，该手势会响应。不过也有冲突的情况。</p>
+<p>通常由touch触发的hitTest:返回的view会接受那个touch；GestureRecognizer不仅会响应touch触发的hitTest:返回的view，以及他的后代</p>
+<p>比如现在有一个backgroundView，包含两个subviews：view1和view2，而且在backgroundView中添加了pinch，view1添加了tap，view2添加了swipe，当一个手指按住view1，另一个手指按住view2的时候开始pinch，只有backgroundView会接受到pinch</p>
+<h2 id="UIGestureRecognizerDelegate"><a href="#UIGestureRecognizerDelegate" class="headerlink" title="UIGestureRecognizerDelegate"></a>UIGestureRecognizerDelegate</h2><ul>
+<li><code>gestureRecognizerShouldBegin:</code>发生于当GestureRecognizer 和view都接收到了用户的手势，这时候的gesture.state是StatePossible，接着系统会发送该消息询问是否开始执行响应，返回NO表示放弃对该手势的处理，并且状态更新为StateFailed。比如可以通过它来实现让一个UIControl的子类只响应自己的手势而避免外来的手势。</li>
+<li><code>shouldReceiveTouch:</code>每个新的touch出现时都会响应。在当用户点击屏幕触发view的hitTest:方法时，系统这时候调用了该消息，如果返回NO，那么GestureRecognizer甚至不能接收到这个手势。该消息甚至早于touchesBegan:withEvent:的调用。实现它可以避免自己的subview同时响应这个touch。<code>{ if (touch.view == self.subview) return NO; }</code></li>
+<li><code>shouldRecognizeSimultaneouslyWithGestureRecognizer:</code>允许开发者决定是否同时响应多个手势。</li>
+</ul>
+<h2 id="关联手势"><a href="#关联手势" class="headerlink" title="关联手势"></a>关联手势</h2><p>一个常见的例子：如果同时添加了处理单击和双击的手势识别时，当双击屏幕的时候，点击的第一下会首先触发单击识别，然后第二下才会触发双击识别。意思是在系统响应一次双击手势的时候，同样会响应一次单击手势。由于识别double-tap而首先会识别single-tap，二者就成了关联性的手势（dependent gestures）</p>
+<p>系统保持这样的默认适用于这种情况：当用户在备忘录app中进行双击一个词汇，首先会执行单击操作，那么光标就会移动到这里，然后执行了双击操作，即选择了这个词汇。这样的混搭没什么不好。</p>
+<p>但是在其他的情况中就需要特别考虑：比如用Safari浏览网页的时候，双击表示局部放大，但如果双击在了一个url链接上的话，那么会首先执行单击操作，结果会触发链接导致网页跳转。当然苹果是不会让这样的事情发生，因此会通过发送<code>[singleTap requireGestureRecognizerToFail: doubleTap]</code>使得在首次探测到单击的时候抑制触发，等待后续是否会触发一个双击，如果接着发生第二次点击使得双击得到识别，那么单击识别就会被放弃处理；如果后续没有实现双击的识别，那么之前的单击就会响应。</p>
+<p>这种处理机制能够很好了分离了多个手势的混淆，使得最先触发的手势可以为了后来短时间内触发的手势而放弃对自己的识别。这种机制存在一个缺点，就是如果后续的手势没有在短时间内触发的话，那么触发原先的手势会出现延迟，虽然最终被识别，但是得过了等待的时间，这样就不能实现及时响应。所以针对利弊以后，可以考虑是否需要使用这种requireToFail的特性。官方建议是设计interface以接受这种关联手势，毕竟延迟的体验有点糟糕，如果绝对不能接受关联手势，就发送requireToFail</p>
+<h2 id="手势冲突"><a href="#手势冲突" class="headerlink" title="手势冲突"></a>手势冲突</h2><p>除了关联手势会产生冲突，其他内置的手势，只要同时被检测到时，系统一样会考虑该执行哪个、该放弃哪个。虽然系统默认只选择一个手势来执行，但是可以通过重载delegate的<code>shouldRecognizeSimultaneouslyWithGestureRecognizer:</code>方法来决定是否同时响应两个手势。</p>
+<h2 id="兼容性"><a href="#兼容性" class="headerlink" title="兼容性"></a>兼容性</h2><p>添加UIGestureRecognizer照理说是不会影响touchesBegan, touchesMoved等一系列手势检测方法，因为这个手势识别类存在的目的不是为了替代，而是更好的共存。但实际上如果同时实现了touchesMoved:withEvent: 和 pan 的话，那么系统首先会检测到touchesBegan和touchesMoved，然后又会立马转向响应处理pan的方法，结果冷淡了touchesMoved，而且实现了pan之后就不会发送touchesEnded:withEvent:消息，反而会发送touchesCancelled:withEvent:消息。官方也说明了当检测到这样的gesture而向target发送handle gesture的消息的过程中，同时也拒绝了view接收其他的event，因此若之前实现了touches等方法的就一定要实现touchesCancelled:withEvent:方法来处理这样被无视的情况。</p>
+<h2 id="持续性手势的累积增量"><a href="#持续性手势的累积增量" class="headerlink" title="持续性手势的累积增量"></a>持续性手势的累积增量</h2><p>这个示例代码说明了如何实现通过pan来拖拽一个方块view。在给blockView添加panRecognizer后就可以通过下面的gesture中得到blockView，然后由于pan是一个持续性的手势，需要在StateBegan和StateChanged的时候改变blockView的位置。接下来定义一个局部变量center来记录原先的blockView的center，再通过translationInView:的方法获得系统帮你计算出blockView相对于某个view的偏移量，既然view.center属性是view在superview中的相对位置，因此在这里也要传递blockView.superview作为blockView偏移量的参照物，之后计算出偏移后的坐标赋值给blockView.center。最后由于UIKit中所有持续性手势（包括rotation, pinch, pan）在偏移过程中，得到的偏移量总是累积性的(cumulative)偏移量，因此每次发送下面的消息中获得的偏移量即为从view最开始静止时的原点到当前位置累加成的偏移量，意味着持续拖拽blockView的过程中，blockView会脱离手指越跑越快，每当手指移动一点点距离时，blockView就会移动很远，因此可以通过发送<code>setTranslation: CGPointZero</code>的消息取消每次偏移的增量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (void)dragBlock:(UIPanGestureRecognizer *)gesture</span><br><span class="line">&#123;</span><br><span class="line">    UIView *blockView = gesture.view;</span><br><span class="line">    if (gesture.state == UIGestureRecognizerStateBegan ||</span><br><span class="line">        gesture.state == UIGestureRecognizerStateChanged) &#123;</span><br><span class="line">        CGPoint center = blockView.center;</span><br><span class="line">        CGPoint translation = [gesture translationInView: blockView.superview];</span><br><span class="line">        blockView.center = CGPointMake(center.x+translation.x, center.y+translation.y);</span><br><span class="line">        [gesture setTranslation: CGPointZero inView: blockView.superview];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同理适用于 pinch</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (void)scaleBlock:(UIPinchGestureRecognizer *)gesture</span><br><span class="line">&#123;</span><br><span class="line">    UIView *blockView = gesture.view;</span><br><span class="line">    if (gesture.state == UIGestureRecognizerStateBegan ||</span><br><span class="line">        gesture.state == UIGestureRecognizerStateChanged) &#123;</span><br><span class="line">        CGAffineTransform transform = blockView.transform;</span><br><span class="line">        CGFloat scale = gesture.scale;</span><br><span class="line">        blockView.transform = CGAffineTransformScale(transform, scale, scale);</span><br><span class="line">        gesture.scale = 1; // Cancel cumulative scale</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>还有 rotation</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (void)rotateBlock:(UIRotationGestureRecognizer *)gesture</span><br><span class="line">&#123;</span><br><span class="line">    UIView *blockView = gesture.view;</span><br><span class="line">    if (gesture.state == UIGestureRecognizerStateBegan ||</span><br><span class="line">        gesture.state == UIGestureRecognizerStateChanged) &#123;</span><br><span class="line">        CGAffineTransform transform = blockView.transform;</span><br><span class="line">        CGFloat rotation = gesture.rotation;</span><br><span class="line">        blockView.transform = CGAffineTransformRotate(transform, rotation);</span><br><span class="line">        gesture.rotation = 0; // Cancel cumulative rotation</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>WWDC</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/gesture-recognizer/" data-id="ck2hbe6y9002gz1jb3djq6xda" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/jkset/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          开发SET卡牌游戏技术总结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/MRC/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">基于引用计数机制的手动内存管理</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

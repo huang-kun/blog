@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>通过中文布局来学习UICollectionViewLayout | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="UICollectionView是UIKit中一个可以深度定制列表样式和交互的工具，比如iOS 10的照片流等等。正好借此机会总结一下：如何自己定制一个UICollectionView的布局来实现中文的简单布局。 由中文布局引发的bugUICollectionView是通过UICollectionViewLayout来进行Cell的布局，它是一个抽象的类，苹果官方根据需要提供了一个子类UIColl">
+<meta name="keywords" content="ios,UICollectionView">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过中文布局来学习UICollectionViewLayout">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;UICollectionViewLeftAlignedFlexibleLayout&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="UICollectionView是UIKit中一个可以深度定制列表样式和交互的工具，比如iOS 10的照片流等等。正好借此机会总结一下：如何自己定制一个UICollectionView的布局来实现中文的简单布局。 由中文布局引发的bugUICollectionView是通过UICollectionViewLayout来进行Cell的布局，它是一个抽象的类，苹果官方根据需要提供了一个子类UIColl">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;UICollectionViewLeftAlignedFlexibleLayout&#x2F;demo.png">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.889Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;UICollectionViewLeftAlignedFlexibleLayout&#x2F;demo.png">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-UICollectionViewLeftAlignedFlexibleLayout" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/UICollectionViewLeftAlignedFlexibleLayout/" class="article-date">
+  <time datetime="2018-12-05T10:55:09.000Z" itemprop="datePublished">2018-12-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      通过中文布局来学习UICollectionViewLayout
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><code>UICollectionView</code>是<code>UIKit</code>中一个可以深度定制列表样式和交互的工具，比如iOS 10的照片流等等。正好借此机会总结一下：如何自己定制一个<code>UICollectionView</code>的布局来实现中文的简单布局。</p>
+<h2 id="由中文布局引发的bug"><a href="#由中文布局引发的bug" class="headerlink" title="由中文布局引发的bug"></a>由中文布局引发的bug</h2><p><code>UICollectionView</code>是通过<code>UICollectionViewLayout</code>来进行Cell的布局，它是一个抽象的类，苹果官方根据需要提供了一个子类<code>UICollectionViewFlowLayout</code>做为水平或垂直方向的线型布局。这里的截图就使用它来布局展示了一段中文内容，其中每一个文字或标点符号对应放在一个<code>UICollectionViewCell</code>中。美中不足的是：</p>
+<ol>
+<li>逗号<code>，</code> 句号<code>。</code>等末尾结束标点不允许放在行首</li>
+<li>书名号<code>《</code> 引号<code>“</code>等起始符号的开始部分不允许放在行尾</li>
+</ol>
+<p>看来简单的线型布局并不能满足一个中文布局的基本要求，但是有没有可能优化一下呢？</p>
+<img src="/UICollectionViewLeftAlignedFlexibleLayout/demo.png" class="">
+
+<a id="more"></a>
+
+<h2 id="基本布局流程"><a href="#基本布局流程" class="headerlink" title="基本布局流程"></a>基本布局流程</h2><p>首先简单介绍一下<code>UICollectionView</code>的布局流程。通常布局会在以下几种情况中开始进行：</p>
+<ul>
+<li>当collection view首次展示item前需要提供布局信息的时候</li>
+<li>当collection view的size变化时</li>
+<li>人为调用<code>invalidateLayout</code>方法时</li>
+</ul>
+<p>布局流程被触发后，<code>UICollectionViewLayout</code>这个负责布局的类会经历哪些步骤呢？</p>
+<ol>
+<li>调用<code>prepareLayout</code>，可以在这里进行准备工作和必要的计算</li>
+<li>执行<code>collectionViewContentSize</code>来获取整体内容的size，确定可滑动的区域大小</li>
+<li>调用<code>layoutAttributesForElementsInRect:</code>获取在指定的可见区域内需要的布局信息，比如即将呈现在屏幕中的这些items位置和大小信息等等<ul>
+<li>其中保存每一个item的位置、大小、是否可见等布局信息的类叫做<code>UICollectionViewLayoutAttributes</code></li>
+</ul>
+</li>
+</ol>
+<p>当布局流程执行完成后，每个item的布局信息就被保留下来，以便下次继续使用。但是遇到某些情况，比如屏幕转动导致的尺寸变化，这样之前计算好的布局信息就不适用于展示在新的屏幕区间，于是就需要丢弃原来的布局结果，重新触发一次新的布局流程，计算并使用新的布局信息。</p>
+<p>当然也可以人为决定是否由于视图的<code>bounds</code>变化而进行重新布局，这时候只要重载<code>shouldInvalidateLayoutForBoundsChange:</code>方法就可以实现。它默认的行为只是在视图的size变化时进行重新布局（比如屏幕翻转）。重载这个方法一定需要注意一点：只要<code>bounds</code>发生改变都会引起这个方法的调用。<code>UICollectionView</code>是<code>UIScrollView</code>的子类，同时也继承了其滑动的行为，而滑动会更新<code>contentOffset</code>属性，实际上改变的是<code>bounds.origin</code>，这就意味着在滑动<code>UICollectionView</code>同时也会频繁地询问是否此时需要更新布局！</p>
+<p>了解了这些布局流程后，实现个性化的布局意味着需要重载其中必要的方法，并且在方法中调用<code>super</code>来获取默认的布局信息，在此基础上进一步加工。</p>
+<h2 id="左对齐布局"><a href="#左对齐布局" class="headerlink" title="左对齐布局"></a>左对齐布局</h2><p>在github上有个<a href="https://github.com/mokagio/UICollectionViewLeftAlignedLayout" target="_blank" rel="noopener">UICollectionViewLeftAlignedLayout</a>引起了我的关注。这是一个左对齐的布局，很适合来做标签云的布局。后来研究了一下源码，了解了实现左对齐的过程：</p>
+<ol>
+<li>重载<code>layoutAttributesForItemAtIndexPath:</code>方法来计算每个item的布局信息：<ul>
+<li>调用<code>super</code>获取当前indexPath的item默认布局<ul>
+<li>如果当前布局是当前section中的第一个item，直接计算位置即可</li>
+<li>如果不是第一个item，那就递归计算上一个item布局，由此可以判断上一个item是否跟当前的item位于同一行<ul>
+<li>如果不在同一行，说明当前item位于行首，直接进行左对齐的位置计算</li>
+<li>如果位于同一行，就根据上一个item的位置来计算当前item应该对齐的位置</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>重载<code>layoutAttributesForElementsInRect:</code>并调用<code>super</code>获取可见区域内的默认布局信息，之后调用重载后的<code>layoutAttributesForItemAtIndexPath:</code>方法将默认的布局更新成自定义的布局。</li>
+</ol>
+<h2 id="左对齐布局升级版"><a href="#左对齐布局升级版" class="headerlink" title="左对齐布局升级版"></a>左对齐布局升级版</h2><p>我需要的中文布局肯定是左对齐的，因此就可以在<code>UICollectionViewLeftAlignedLayout</code>的基础上做进一步修改，我重新给它起个名字叫<code>UICollectionViewLeftAlignedFlexibleLayout</code>。首先定义好可以拓展的特性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@protocol UICollectionViewDelegateLeftAlignedFlexibleLayout &lt;UICollectionViewDelegateFlowLayout&gt;</span><br><span class="line"></span><br><span class="line">@optional</span><br><span class="line">/// 对于不可以在行开头显示的item，返回YES</span><br><span class="line">- (BOOL)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLeftAlignedFlexibleLayout *)collectionViewLayout itemShouldNotAppearAtBeginningOfLineForIndexPath:(NSIndexPath *)indexPath;</span><br><span class="line"></span><br><span class="line">/// 对于不可以在行结尾显示的item，返回YES</span><br><span class="line">- (BOOL)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLeftAlignedFlexibleLayout *)collectionViewLayout itemShouldNotAppearAtTheEndOfLineForIndexPath:(NSIndexPath *)indexPath;</span><br><span class="line"></span><br><span class="line">/// 对于不可以在行开头和结尾显示的item，返回YES</span><br><span class="line">- (BOOL)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLeftAlignedFlexibleLayout *)collectionViewLayout itemShouldNotAppearAtBothEndsOfLineForIndexPath:(NSIndexPath *)indexPath;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+
+<p>实现<code>layoutAttributesForItemAtIndexPath:</code>的过程挺有意思，让我踩了不少坑：</p>
+<ul>
+<li>这个左对齐布局在该方法中用递归调用来计算上一个item的布局，如果我需要下一个item的布局信息，就不能仿照地去递归调用了，否则就成了死循环</li>
+<li>虽然可以获取到上一个或者下一个item的布局，但是只能使用不可修改，只有返回一个布局信息是作为给定<code>NSIndexPath</code>下的布局信息会被采纳，修改其他item的布局并不会生效。</li>
+</ul>
+<p>由于多次修改失败后，我开始重新调整思绪，专注当下，也就是只调整当下item的布局信息，在保持左对齐的逻辑不变的同时也要考虑下一个item的布局：</p>
+<ul>
+<li>如果下一个item是不能出现在行首的标点符号（比如<code>，</code> <code>。</code>），那么判断当前item是否为该行最后一个item，如果是的话就需要将最后一个item提前安置到下一行的开头</li>
+<li>如果当前的item本身就是不能出现在行末尾的标点符号（比如<code>《</code> <code>“</code>），判断它是否为该行最后一个，是的话就提前转行</li>
+</ul>
+<p>此外还要考虑细节的实现：</p>
+<ul>
+<li>判断一个item是否在行末尾的位置，需要提前计算下一个item的位置是否会超出该行的最大限度，因为超过的话就会被安置到下一行的开头</li>
+<li>如何不用递归的方法来计算出下一个item的布局呢？<ul>
+<li>可以使用<code>super</code>来获取它默认的布局，可以获得item的size</li>
+<li>根据当前item的位置和大小信息，可以推算出下一个item的origin</li>
+<li><code>frame = {origin, size}</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line">- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath &#123;</span><br><span class="line">    UICollectionViewLayoutAttributes* currentItemAttributes = nil;</span><br><span class="line">    </span><br><span class="line">    // 防止iOS 9的崩溃</span><br><span class="line">    if (@available(iOS 10, *)) &#123;</span><br><span class="line">        currentItemAttributes = [super layoutAttributesForItemAtIndexPath:indexPath].copy;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        currentItemAttributes = [super layoutAttributesForItemAtIndexPath:indexPath];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 获取整体布局的属性</span><br><span class="line">    UIEdgeInsets sectionInset = [self evaluatedSectionInsetForItemAtIndex:indexPath.section];</span><br><span class="line">    CGFloat minimumLineSpacing = [self evaluatedMinimumLineSpacingForSectionAtIndex:indexPath.section];</span><br><span class="line">    CGFloat minimumInteritemSpacing = [self evaluatedMinimumInteritemSpacingForSectionAtIndex:indexPath.section];</span><br><span class="line">        </span><br><span class="line">    // 如果当前item是section中的第一个，就直接左对齐</span><br><span class="line">    BOOL isFirstItemInSection = indexPath.item == 0;</span><br><span class="line">    if (isFirstItemInSection) &#123;</span><br><span class="line">        [currentItemAttributes leftAlignFrameWithSectionInset:sectionInset];</span><br><span class="line">        return currentItemAttributes;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 通过递归计算出上一个item的布局信息</span><br><span class="line">    NSIndexPath *previousIndexPath = [NSIndexPath indexPathForItem:indexPath.item-1 inSection:indexPath.section];</span><br><span class="line">    UICollectionViewLayoutAttributes *previousItemAttributes = [self layoutAttributesForItemAtIndexPath:previousIndexPath];</span><br><span class="line">    CGRect previousFrame = previousItemAttributes.frame;</span><br><span class="line">    CGFloat previousFrameRightPoint = previousFrame.origin.x + previousFrame.size.width;</span><br><span class="line">    </span><br><span class="line">    // 调整当前item的frame，由于后面会对标点进行换行，导致计算出item布局位置与默认位置不在同一行，如果不调整就会出现Cell叠加的bug</span><br><span class="line">    CGRect currentFrame = currentItemAttributes.frame;</span><br><span class="line">    if (CGRectGetMinY(previousFrame) &gt; CGRectGetMaxY(currentFrame)) &#123;</span><br><span class="line">        currentFrame.origin.y = previousFrame.origin.y + previousFrame.size.height / 2 - currentFrame.size.height / 2;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 计算整行区域的frame</span><br><span class="line">    CGFloat layoutWidth = CGRectGetWidth(self.collectionView.frame) - sectionInset.left - sectionInset.right;</span><br><span class="line">    CGRect strecthedCurrentFrame = CGRectMake(sectionInset.left, currentFrame.origin.y, layoutWidth, currentFrame.size.height);</span><br><span class="line">    </span><br><span class="line">    // 判断上一个item是否在该行里，如果上一个item不在这一行，说明当前item是该行里的第一个，因此直接左对齐</span><br><span class="line">    BOOL isFirstItemInRow = !CGRectIntersectsRect(previousFrame, strecthedCurrentFrame);    </span><br><span class="line">    if (isFirstItemInRow) &#123;</span><br><span class="line">        [currentItemAttributes leftAlignFrameWithSectionInset:sectionInset];</span><br><span class="line">        return currentItemAttributes;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 如果上一个item在这一行中，那么当前item的坐标会紧跟和上一个item的位置</span><br><span class="line">    CGRect frame = currentItemAttributes.frame;</span><br><span class="line">    frame.origin.x = previousFrameRightPoint + minimumInteritemSpacing;</span><br><span class="line">    frame.origin.y = strecthedCurrentFrame.origin.y + strecthedCurrentFrame.size.height / 2 - frame.size.height / 2;</span><br><span class="line">    if (CGRectGetMaxX(frame) &gt; layoutWidth) &#123;</span><br><span class="line">        frame.origin.x = sectionInset.left;</span><br><span class="line">        frame.origin.y = CGRectGetMaxY(frame) + minimumLineSpacing;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 这里是为中文标点做的优化，可以通过调用super来获取下一个item的size信息（避免递归造成死循环）</span><br><span class="line">    NSInteger numberOfItems = [self.collectionView numberOfItemsInSection:indexPath.section];</span><br><span class="line">    NSIndexPath *nextIndexPath = [NSIndexPath indexPathForItem:indexPath.item+1 inSection:indexPath.section];</span><br><span class="line">    if (nextIndexPath.item &lt; numberOfItems) &#123;</span><br><span class="line">        id &lt;UICollectionViewDelegateLeftAlignedFlexibleLayout&gt; delegate = (id)self.collectionView.delegate;</span><br><span class="line">        </span><br><span class="line">        // 防止某些标点出现在行开头</span><br><span class="line">        if ([delegate respondsToSelector:@selector(collectionView:layout:itemShouldNotAppearAtBeginningOfLineForIndexPath:)]) &#123;</span><br><span class="line">            if ([delegate collectionView:self.collectionView layout:self itemShouldNotAppearAtBeginningOfLineForIndexPath:nextIndexPath]) &#123;</span><br><span class="line">                CGRect nextFrame = frame;</span><br><span class="line">                nextFrame.origin.x = CGRectGetMaxX(frame) + minimumInteritemSpacing;</span><br><span class="line">                nextFrame.size = [super layoutAttributesForItemAtIndexPath:nextIndexPath].frame.size;</span><br><span class="line">                </span><br><span class="line">                if (CGRectGetMaxX(nextFrame) &gt; layoutWidth) &#123;</span><br><span class="line">                    frame.origin.x = sectionInset.left;</span><br><span class="line">                    frame.origin.y = CGRectGetMaxY(frame) + minimumLineSpacing;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 防止某些标点出现在行末尾</span><br><span class="line">        if ([delegate respondsToSelector:@selector(collectionView:layout:itemShouldNotAppearAtTheEndOfLineForIndexPath:)]) &#123;</span><br><span class="line">            if ([delegate collectionView:self.collectionView layout:self itemShouldNotAppearAtTheEndOfLineForIndexPath:indexPath]) &#123;</span><br><span class="line">                CGRect nextFrame = frame;</span><br><span class="line">                nextFrame.origin.x = CGRectGetMaxX(frame) + minimumInteritemSpacing;</span><br><span class="line">                nextFrame.size = [super layoutAttributesForItemAtIndexPath:nextIndexPath].frame.size;</span><br><span class="line">                </span><br><span class="line">                if (CGRectGetMaxX(nextFrame) &gt; layoutWidth) &#123;</span><br><span class="line">                    frame.origin.x = sectionInset.left;</span><br><span class="line">                    frame.origin.y = CGRectGetMaxY(frame) + minimumLineSpacing;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // 防止某些标点同时出现在行开头和末尾</span><br><span class="line">        if ([delegate respondsToSelector:@selector(collectionView:layout:itemShouldNotAppearAtBothEndsOfLineForIndexPath:)]) &#123;</span><br><span class="line">            if ([delegate collectionView:self.collectionView layout:self itemShouldNotAppearAtBothEndsOfLineForIndexPath:nextIndexPath]) &#123;</span><br><span class="line">                NSIndexPath *afterNextIndexPath = [NSIndexPath indexPathForItem:nextIndexPath.item+1 inSection:nextIndexPath.section];</span><br><span class="line">                if (afterNextIndexPath.item &lt; numberOfItems) &#123;</span><br><span class="line">                    CGRect nextFrame = frame;</span><br><span class="line">                    nextFrame.origin.x = CGRectGetMaxX(frame) + minimumInteritemSpacing;</span><br><span class="line">                	nextFrame.size = [super layoutAttributesForItemAtIndexPath:nextIndexPath].frame.size;</span><br><span class="line">                    </span><br><span class="line">                    CGRect afterFrame = nextFrame;</span><br><span class="line">                    afterFrame.origin.x = CGRectGetMaxX(nextFrame) + minimumInteritemSpacing;</span><br><span class="line">                	afterFrame.size = [super layoutAttributesForItemAtIndexPath:afterNextIndexPath].frame.size;</span><br><span class="line">                    </span><br><span class="line">                    if (CGRectGetMaxX(afterFrame) &gt; layoutWidth) &#123;</span><br><span class="line">                        frame.origin.x = sectionInset.left;</span><br><span class="line">                        frame.origin.y = CGRectGetMaxY(frame) + minimumLineSpacing;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 确定位置后，返回当前item的布局信息</span><br><span class="line">    currentItemAttributes.frame = frame;</span><br><span class="line">    return currentItemAttributes;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>开发中也会遇到一些bug，毕竟这样的换行操作会造成整体布局的变动，就需要注意：</p>
+<ul>
+<li>所有item更新后的布局相比默认的来看，除了位置或frame以外，像size等其他属性都可以共用</li>
+<li>换行后的整体contentSize会比换行前的高度略有增加，所以必要时也得重新计算<code>collectionViewContentSize</code></li>
+</ul>
+<p>在开发过程中，也可以做一些优化：</p>
+<ul>
+<li>计算过某个<code>indexPath</code>的布局信息就可以缓存起来，下次递归直接返回结果，避免重复计算</li>
+<li>利用<code>prepareLayout</code>方法，提前计算一些必要的信息</li>
+<li>必要时重载<code>shouldInvalidateLayoutForBoundsChange:</code>，根据需要来制定布局自动失效的规则</li>
+</ul>
+<h2 id="升级版使用方法"><a href="#升级版使用方法" class="headerlink" title="升级版使用方法"></a>升级版使用方法</h2><p>在ViewController中创建<code>UICollectionView</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">UICollectionViewLeftAlignedFlexibleLayout *layout = [UICollectionViewLeftAlignedFlexibleLayout new];</span><br><span class="line"></span><br><span class="line">_collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:layout];</span><br><span class="line">_collectionView.dataSource = self;</span><br><span class="line">_collectionView.delegate = self; // 这里需要实现扩展来的UICollectionViewDelegateLeftAlignedFlexibleLayout，而不是UICollectionViewDelegate</span><br><span class="line"></span><br><span class="line">[self.view addSubview:_collectionView];</span><br></pre></td></tr></table></figure>
+
+<p>在实现<code>UICollectionViewDelegateLeftAlignedFlexibleLayout</code>的方法中指明哪些中文标点不可以显示在行开头或结尾。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout itemShouldNotAppearAtBeginningOfLineForIndexPath:(NSIndexPath *)indexPath &#123;</span><br><span class="line">    // 不能放在行首的中文标点  ）〉》」』〕、】。！；”’—﹏…～？：，﹄</span><br><span class="line">    static NSCharacterSet *chineseEndingPunctuationCharacterSet = nil;</span><br><span class="line">    if (!chineseEndingPunctuationCharacterSet) &#123;</span><br><span class="line">        chineseEndingPunctuationCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@&quot;\uff09\u3009\u300b\u300d\u300f\ufe44\u3015\u2014\ufe4f\u3001\u3011\u3002\uff01\uff1b\u201d\u2019\u2026\uff5e\uff0c\uff1f\uff1a&quot;];</span><br><span class="line">    &#125;</span><br><span class="line">    NSString *character = _characters[indexPath.item];</span><br><span class="line">    NSRange range = [character rangeOfCharacterFromSet:chineseEndingPunctuationCharacterSet];</span><br><span class="line">    return range.location != NSNotFound &amp;&amp; range.length &gt; 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLeftAlignedFlexibleLayout *)collectionViewLayout itemShouldNotAppearAtTheEndOfLineForIndexPath:(NSIndexPath *)indexPath &#123;</span><br><span class="line">    // 不能放在行末尾的中文标点（〈《「『〔【“‘﹃</span><br><span class="line">    static NSCharacterSet *chineseStartingPunctuationCharacterSet = nil;</span><br><span class="line">    if (!chineseStartingPunctuationCharacterSet) &#123;</span><br><span class="line">        chineseStartingPunctuationCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@&quot;\uff08\u3008\u300a\u300c\u300e\u3014\u3010\u201c\u2018\ufe43&quot;];</span><br><span class="line">    &#125;</span><br><span class="line">    NSString *character = _characters[indexPath.item];</span><br><span class="line">    NSRange range = [character rangeOfCharacterFromSet:chineseStartingPunctuationCharacterSet];</span><br><span class="line">    return range.location != NSNotFound &amp;&amp; range.length &gt; 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>OK，大功告成！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/UICollectionViewLeftAlignedFlexibleLayout/" data-id="ck2hbe6z4003bz1jb48zw896s" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/binary-search-for-UICollectionViewLayout/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          使用二分搜索来提速UICollectionView
+        
+      </div>
+    </a>
+  
+  
+    <a href="/git-guru/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">成为一名git大师</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

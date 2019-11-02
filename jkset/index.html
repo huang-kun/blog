@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>开发SET卡牌游戏技术总结 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="自从我发布了这个JKSET作为开源项目，我认为应该写点什么，帮助有兴趣了解这个游戏或者代码的朋友们。点击进入源码地址 游戏简介这是一款源自斯坦福iOS 7开发课程的第一次大作业项目，项目背景是一款曾经风靡20世纪90年代歪果人的游戏，名叫SET。Set游戏是由一位名叫Marsha Falco的女士于1974年设计的一款卡片游戏，并且由Set公司在1990年正式推出。Marsha曾是一名专注于癫痫是">
+<meta name="keywords" content="game,游戏">
+<meta property="og:type" content="article">
+<meta property="og:title" content="开发SET卡牌游戏技术总结">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;jkset&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="自从我发布了这个JKSET作为开源项目，我认为应该写点什么，帮助有兴趣了解这个游戏或者代码的朋友们。点击进入源码地址 游戏简介这是一款源自斯坦福iOS 7开发课程的第一次大作业项目，项目背景是一款曾经风靡20世纪90年代歪果人的游戏，名叫SET。Set游戏是由一位名叫Marsha Falco的女士于1974年设计的一款卡片游戏，并且由Set公司在1990年正式推出。Marsha曾是一名专注于癫痫是">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.937Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-jkset" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/jkset/" class="article-date">
+  <time datetime="2015-07-23T10:55:01.000Z" itemprop="datePublished">2015-07-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      开发SET卡牌游戏技术总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>自从我发布了这个JKSET作为开源项目，我认为应该写点什么，帮助有兴趣了解这个游戏或者代码的朋友们。<a href="http://github.com/hksx1987/JKSET" target="_blank" rel="noopener">点击进入源码地址</a></p>
+<h2 id="游戏简介"><a href="#游戏简介" class="headerlink" title="游戏简介"></a>游戏简介</h2><p>这是一款源自斯坦福iOS 7开发课程的第一次大作业项目，项目背景是一款曾经风靡20世纪90年代歪果人的游戏，名叫SET。Set游戏是由一位名叫Marsha Falco的女士于1974年设计的一款卡片游戏，并且由Set公司在1990年正式推出。Marsha曾是一名专注于癫痫是否遗传于德国牧羊人问题的人口遗传学家。为了研究犬类细胞的基因和染色体，Marsha为每只测试犬创建了文档卡片以记录信息，不同的是，她通过绘制图案的方式来记录数据，使用不同的图案及不同的属性来代表不同的基因组合。后来当她在与其工作的兽医解释这些组合图案的时候，她认为还可以给这些图案组合加入更多有趣的东西，之后就诞生了SET游戏。几年后，Marsha通过与家人朋友的游戏过程中对其重新进行了完善，最终于1990年发布了这款游戏。</p>
+<p>游戏中的每张卡片中都含有4种元素，每种元素包含3种选择 － 数量（1个，2个，3个），图案（钻石、曲状物、柱形），效果（实心、条状、空心），颜色（红色、绿色、紫色）。一副完整的卡牌共有81张卡片，而玩家的任务在于每次选出3张卡片来组成一对SET，并且从81张卡片中挑选出所有可能的SET。</p>
+<p>组成一对SET的唯一条件是：所选3张卡片中的每个元素，只需满足－要么“都相同”，要么“都不同”。<br>点击这里可以看到图和规则－<a href="https://baike.baidu.com/item/SET纸牌/8059167" target="_blank" rel="noopener">百度百科：SET纸牌</a>，以上是关于游戏本身的大致介绍。</p>
+<a id="more"></a>
+
+<h2 id="程序设计"><a href="#程序设计" class="headerlink" title="程序设计"></a>程序设计</h2><h3 id="抽象卡牌类"><a href="#抽象卡牌类" class="headerlink" title="抽象卡牌类"></a>抽象卡牌类</h3><p>由于Objective C是面向对象级别的语言，因此游戏的卡片等对象都是声明为类。主要的抽象类有Card和Deck和抽象的GameViewController，这些被设计为抽象的类，目的是为了定义一个卡片配对游戏基础类的框架并提供了抽象方法的声明，最重要的是他们不会绑定为某一种类型的卡牌（比如SET或者扑克牌），因此保证良好的重用性。</p>
+<h3 id="char类型的enum"><a href="#char类型的enum" class="headerlink" title="char类型的enum"></a>char类型的enum</h3><p>SETCard包含的四种属性分别设计为char类型的enum，这真是足够抠门了有木有，一个char仅仅占有一个字节的空间（int都是4个字节）。对于极少量的选项，char就能应付。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_ENUM(char, SETOption) &#123;</span><br><span class="line">    SETNoneValue = &apos;\x0&apos;,</span><br><span class="line">    SETFirstValue = &apos;\x01&apos;,</span><br><span class="line">    SETSecondValue = &apos;\x02&apos;,</span><br><span class="line">    SETThirdValue = &apos;\x03&apos;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>由于每种属性在游戏中都会有3个不同的选项，因此他们底层的值应该可以共享一个enum，以少量的代码完成更多的匹配工作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef SETOption SETColor;</span><br><span class="line">typedef SETOption SETSymbol;</span><br><span class="line">typedef SETOption SETNumber;</span><br><span class="line">typedef SETOption SETShading;</span><br></pre></td></tr></table></figure>
+
+<h3 id="多重返回"><a href="#多重返回" class="headerlink" title="多重返回"></a>多重返回</h3><p>作为子类的SETCard和SETDeck重载了这些抽象方法，甚至为了更好的实现，SETCard提供了一个新的match:方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (NSInteger)match:(NSArray *)cards</span><br><span class="line">       symbolMatch:(BOOL *)symbolMatch</span><br><span class="line">        colorMatch:(BOOL *)colorMatch</span><br><span class="line">       numberMatch:(BOOL *)numberMatch</span><br><span class="line">      shadingMatch:(BOOL *)shadingMatch;</span><br></pre></td></tr></table></figure>
+
+<p>在这里使用BOOL *作为参数，是基于C语言的设计。由于C语言的限制，一个函数结束后只能够返回一个结果；但如果返回多个结果的话，可以将指针作为参数传入函数中，并对其进行赋值，因而实现了多重返回的机制。在Objective C中常见的有</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSError *error = nil;</span><br><span class="line">[string writeToFile:path atomically:YES encoding: NSUTF8StringEncoding error:&amp;error];</span><br></pre></td></tr></table></figure>
+
+<p>因此SETCard的这种设计，如果3张卡片匹配失败，那么还可以通过BOOL *指针了解到具体失败的原因，比如颜色不匹配等等。</p>
+<h3 id="游戏的逻辑大脑"><a href="#游戏的逻辑大脑" class="headerlink" title="游戏的逻辑大脑"></a>游戏的逻辑大脑</h3><p>GameBrain是处理游戏逻辑的地方。这个大脑会从包含了N张卡片的Deck的对象中随机抽取一定数量的卡片（通过Controller展现在屏幕上）作为游戏的开局（在JKSET中，GameBrain一次性展示完了所有的81张卡片，而真实的游戏是每次只展示12张），接着处理用户的卡片选取、匹配等操作逻辑，如果匹配成功或失败，通过发送通知的设计模式进行回调，保证任何注册了通知中心的类能够正确处理对游戏匹配结果的响应，比如ViewController需要在用户匹配成功后，立刻从屏幕上清除这对组合。</p>
+<h3 id="抽象Controller与SETController"><a href="#抽象Controller与SETController" class="headerlink" title="抽象Controller与SETController"></a>抽象Controller与SETController</h3><p>这里不仅仅有抽象的卡牌类，对于GameViewController也是一个抽象类，他几乎包揽了大多数的重活儿，不仅担任了处理GameBrain回调的角色，同时也接手了展示卡牌的工作，并且还要处理来自用户的响应。那么他的子类SETController（简称）需要干什么呢？子类主要就是处理任何有关SET游戏的细节。因为作为抽象父类的缘由，GameViewController是不能够知道任何有关SET的细节，甚至不能够知道任何有关各类卡牌的细节（这样才配得起“抽象”的头衔）。</p>
+<h3 id="卡片视图"><a href="#卡片视图" class="headerlink" title="卡片视图"></a>卡片视图</h3><p>不得不说视图的实现是个挑战，即怎么把每张SET卡片的图案给绘制出来？（一个红色条状的柱形？三个空心的绿色曲状物？两个实体紫色菱形图案？）总共81种图案样式的搭配，如果不好好设计下，我直接就可以GameOver了。仔细观察下这些卡片，他们无论是包含一个、两个、还是三个图案，这些图案仅仅是出现在卡片的中的几个位置，即正中央、左右、左中右。其中三个图案的左中右结构会比两个图案的左右结构占有的空间略显开阔，因此思路是给一张卡片定义出5个中心点，以每个中心点定位出一个矩型框，这样5个矩形框就能承载所有不同数量的图案本身应该展示的位置，具体根据图案数量来决定每个图案应该被绘制在哪个矩形内部。至于形状的绘制，可以通过UIBezierPath类进行简单的绘制（除了曲状物会比较麻烦，需要计算曲线周围的不同的控制点）。而最后需要根据卡片的展示效果属性来决定具体是需要填充（-fill），描边（-stroke），还是条形绘制（striped）。具体的绘制的基本API请参考Core Graphics.</p>
+<p>从设计上讲，在CardView的drawRect:方法中自己完全可以实现上述的所有绘制，但是CardView依然被设计为一个抽象类，原因在于有些属性是可以拓展的。例如经典SET游戏采用红绿紫作为游戏的三种取色，难道不可以更换么？这样一说，甚至钻石、曲状物、柱形都可以被替换为其他任意的三个形状，因此具体的颜色和形状均可以由CardView的子类来提供，只要返回不同的UIColor和给定矩形内不同的UIBezierPath即可。</p>
+<p>最后简单提一下视图的性能问题。由于要求制作为圆角形式的卡片，那么可以沿着卡片的矩形边缘创建一个圆角矩形的UIBezierPath对象，然后发送addClip消息，于是圆角外部多余的部分就被裁减去了。可问题在于，圆角外部呈现出了卡片剪去部分不透明的黑色背景。为了显示正确的圆角效果，那么需要将CardView的背景色设为透明色，或者将opaque属性设为NO，最终结果虽然展示出了完美的圆角，但是背地里却牺牲了性能作为代价。毕竟每张卡片的透明效果的绘制都是源自图层叠加的结果，即消耗一定系统资源的前提下实现的渲染，那么想象一下绘制81张透明效果的卡片在UIScrollView的滚动下会是怎样的消耗呢？即使手机吃得消，作为开发者也应该考虑性能问题。我的解决办法是在CardView初始化的时候，将他的背景色直接设置成与游戏桌面的一致的背景色，角落被剪去后依然呈现相同的底色。</p>
+<h3 id="MVC架构"><a href="#MVC架构" class="headerlink" title="MVC架构"></a>MVC架构</h3><p>不言而喻，MVC的设计模式早已普遍用于iOS的开发流程。在这个demo早期的版本中，我竟然恰恰无意间就违反了这个准则。虽然连我自己也没有特别注意，好在后来我做了修复。</p>
+<p>之前出现的架构问题体现在以下两点：</p>
+<ol>
+<li>在SETCardView类中声明了带有retain关键字的SETCard属性</li>
+<li>在GameBrain类中定义了GameBrainDelegate处理匹配回调（成功或失败）</li>
+</ol>
+<p>首先看第一点，SETCardView类属于UIView的子类，目的是绘制SETCard的具体样子，那当然需要持有一个SETCard属性作为需要绘制的数据了，而且更方便的是可以通过选择的view直接追溯到相关的卡片对象。咋眼一看也没什么不妥，但是严格意义上讲，这个行为实际上违反了MVC的一个原则：视图不可以拥有数据模型，也就是MVC的V不能够拥有M！之所以设计了MVC的模式，就是为了分工明确，用以支持扩展和重用等特性的机制。其原则是：数据模型负责程序的逻辑处理，视图负责绘制，二者通过控制器进行协调沟通。控制器担任了中间人的作用，既能够访问数据和视图，也能够接受来自他们的请求或变更信息。这里同时也明确了一点，就是视图不能直接跟数据模型进行交流。如果数据模型中包含了大量的文件或列表等信息，那么跟视图绑定的结果会是非常低效和繁重的。而视图的任务也仅仅是描绘和展示基本信息，不应该承担对数据的管理。这里每个SETCardView持有（retain）一个SETCard对象其实就体现了不合理的设计（虽然SETCard很小不足以产生问题）。但是如果SETCardView没有SETCard，那他画什么？当然view是可以持有基本的数据类型，比如(char)SETSymbol, SETColor等等，因此可以将传入的SETCard分解为基本元件，然后根据这些属性来绘制卡片的样子。如果玩家选择了一张SETCardView，那么需要通过这个视图得到相应的SETCard对象，进行匹配运算的话，怎么办？我的解决是给SETCardView创建一个category，声明一个方法来生成一个与这个视图描绘的属性相同的SETCard对象。生成的卡片对象虽然各项属性与视图展示的完全一致，但是它毕竟是一个全新的对象，已经跟之前那个传给视图被分解后用于绘制的Card对象没有任何关系了。这样的话，整个游戏的数据模型关于卡片比对的设计，就不可以针对对象的引用进行比对，而是要根据对象的属性值进行比对。（比如判断游戏数组中属否添加了一张卡片，不能够查看数组中是否存在与该卡片内存地址相同identical的卡片对象，而是判断是否存在与卡片属性内容相同的卡片对象）</p>
+<p>第二点是关于给数据模型设计回调问题。首先设计delegate其实没什么问题，比如玩家选择了3张卡片，然后请gameBrain进行配对运算，然后gameBrain在得到结果后自然需要通过一种方式，来告诉GameViewController匹配的结果是成功还是失败。因此通过GameBrainDelegate didFindMatch或者didMissMatch等方法发送结果，然后GameViewController遵守了GameBrainDelegate以后，就能收到匹配结果并加以处理不是挺好吗？是的，不过问题是现在又多了一个SETGameViewController的子类，在父类收到匹配结果后，要是子类也需要匹配结果怎么办？如果gameBrain把自己的delegate属性设为作为子类的SETGameViewController，那么作为父类的GameViewController就无法收到匹配结果，因为delegate只支持一对一的形式。如果delegate是父类controller，然后父类特别声明一个方法用于收到并传递匹配结果，希望子类通过重载的方式获得匹配信息。那么delegate中声明了多少方法，父类controller也需要声明同样多的方法给子类提供入口，明显增加了复杂和繁琐的问题。所以结论就是，如果数据模型与控制器之间不存在一对一的关系，通常不建议使用delegate回调，而是发布通知。在游戏大脑得到匹配结果后，通过postNotification:发布匹配信息，这样任何注册了观察者的控制器，就都可以收到匹配信息了，这样才真正保持了简洁的设计。对于接收通知的问题，需要确保这两个父子控制器都有注册为通知订阅者，然后就是先注册了订阅者的对象，会在相应的通知发布后会比其他晚注册的对象先收到通知，因此注册顺序的先后会决定父子控制器谁先接收并处理通知。</p>
+<h3 id="脑力教练"><a href="#脑力教练" class="headerlink" title="脑力教练"></a>脑力教练</h3><p>一款面向玩家的游戏，没有游戏的规则和玩法介绍怎么行？因此出现了一个TrainerViewController的类专门负责这种工作。他首先是展示一些文字说明，然后提出一道单选题，请用户选择以下合适的卡片进行组合匹配。该类同样持有一个单独的brain对象，负责匹配卡片的配对运算，但是区别是这个brain在初始化时候没有包含一个deck对象，即在没有一副完整的卡牌情况下处理简单的配对，这是符合逻辑的（因为简单的练习不需要绑定deck）。因此在GameBrain类的设计上也要求适配在没有deck的情况下能够正常工作。</p>
+<h3 id="OC语言的动态机制"><a href="#OC语言的动态机制" class="headerlink" title="OC语言的动态机制"></a>OC语言的动态机制</h3><p>用户选择一张卡片，该项目会在卡片的位置添加一个橙色调的CAShapeLayer作为选中高亮框，当选中另一张卡片时会添加另一个橙色高亮框，这些选中框会以sublayer的形式添加到collectionView.layer.sublayers数组中。之后有趣的事情发生了，这时候用户突然重新点击第一次选中的卡片来取消对卡片的选中，之后就需要从屏幕上撤销那个卡片上的橙色高亮框。问题是如何从collectionView.layer.sublayers数组中追溯到对应的sublayer进行消除呢？在collectionView中的每个卡片视图都是以cell的形式展示的，每个cell都绑定一个NSIndexPath对象作为他们的定位，那么特定的cell就可以通过给定NSIndexPath对象来返回对应的cell。如果每个添加的橙色高亮框能够绑定一个相应位置的NSIndexPath的话，不就可以通过给定NSIndexPath对象来获取对应的高亮框了么？想想真是痴人说梦啊，因为官方提供的CALayer类和NSIndexPath类二者是没有半毛钱关系的，他们本是来自不同的世界，谁也不是谁的属性。不过，自从Objective C有了动态库之后，原本素不相识的两个类，在这里就可以通过调用库中的某个函数而联姻了，该特性被称为“关联对象”。通过创建一个CALayer的category，分别实现对AssociatedIndexPath的setter和getter方法，实现设置和获取CALayer对应的NSIndexPath对象的成果，那么高亮框就会变得跟cell一样容易读取。世界因此多了一份爱与和谐有木有。具体的暗黑艺术请参考来自NSHipster的文章Associated Objects</p>
+<h3 id="C语言的优势"><a href="#C语言的优势" class="headerlink" title="C语言的优势"></a>C语言的优势</h3><p>前几天有人给我提了建议，说在简单配对的基础上，计算出所有剩余可能配对的组合数量，因此关系到了算法问题。一张数量为1的红色条状的柱形卡，可以和一张数量为3的空心绿色曲状卡以及一张数量为2的实体紫色菱形卡组成一个组合；而同样的数量为1的红色条状的柱形卡，也可以跟数量为1的红色条状的曲状卡以及数量为1的红色条状菱形卡组成一个组合。那么81张卡的所有配对组合数是多少呢？于是我给出了简单粗暴的三重for循环，再通过创建NSSet类来过滤除去重复的组合，最终得出了1080种匹配（WoW），每次成功匹配一个组合之后，那么该组合以及包含这3张匹配的卡片的所有组合都会从1080中减去作为剩余的组合数。（比如剩余的78张卡片中可能的全部组合数为962，以此类推）</p>
+<p>这样数量级的运算，会在每次用户成功匹配一组SET之后即刻发生，通过Foundation的类去计算就已经体现出明显的延迟。原因是所有OC的对象都是在计算机的堆内存中进行存储，每次调用方法运算时，函数被拷贝到栈内存中执行，那么计算机会不停地往返于堆栈之间，再加上堆本身是个杂而无序的碎片空间，无异于增加了寻址操作的工作量。因此执行效率固然成了心头痛点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">NSMutableSet sets = [NSMutableSet set];</span><br><span class="line">for (i = 0; i &lt; count; ++i) &#123;</span><br><span class="line">    SETCard *c1 = cards[i];</span><br><span class="line">    for (j = 0; j &lt; count; ++j) &#123;</span><br><span class="line">        SETCard *c2 = cards[j];</span><br><span class="line">        if (c1 != c2) &#123;</span><br><span class="line">            SETCard *sc = [_trainer suggestedCardForCards:@[c1, c2]];</span><br><span class="line">            for (m = j; m &lt; count; ++m) &#123;</span><br><span class="line">                SETCard *c3 = cards[m];</span><br><span class="line">                if (c3 != c1 &amp;&amp; c3 != c2) &#123;</span><br><span class="line">                    if ([sc isEqual:c3]) &#123;</span><br><span class="line">                        NSSet *set = [NSSet setWithObjects:@(i), @(j), @(m), nil];</span><br><span class="line">                        [sets addObject:set];</span><br><span class="line">                        break;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>怎么办呢？</p>
+<p>优化第一步：首先将数组中所有参与循环的每一个的SETCard类对象，转换成C结构类型，定义一个具有跟SETCard类一样属性值的C Structs类型，比如CTSETCard，然后在计算方法中根据每一个SETCard对象的属性值而创建对应的结构对象CTSETCardMake(x,y,m,n)，这样意味着将原本需要去堆内存中寻找的卡片对象全部转移到了栈内存中，因此计算过程中，寻址迅速更快。</p>
+<p>接着优化第二步：将计算中相关的NSArray或NSSet集合对象转换成为C数组，就同样把需要的集合从堆转移到了栈内存中，这样的计算，对于速度的提升真的是是到了可以用眼睛分辨的程度。</p>
+<p>优化第三步：尽可能的保留并重用数组结果。试想一下，对81张卡片首次就生成了1080个配对组合，接下来由于用户挑选出了任意一对组合而需要重新遍历出962个组合，对于每次的挑选都进行重复的遍历行为都是相对低效的（尽管越往后的遍历次数会相应减少）。如果换一种思路，为什么不能在原有的基础上直接删除与成功配对卡片相关的所有组合，然后找剩下的不就完了？是的。想法非常好，只是C数组不能够像NSMutableArray那样可以舒服地进行addObject:和removeObject:操作。首先C数组需要给定空间，然后给某位index中添加元素需要直接用等号给它赋值，如果删除它也通过等号赋值为0等方法。你可以想象一下首次生成了一个含有1080个配对的巨型C数组，每个index都包含着一对配对（即3张卡），接着用户挑选了3张卡配对后，这个巨型C数组就开始遍历，删除了包含这些卡片的所有配对，结果很多随机的index就成了0，接着还需要把含有0值的index通过排序到集合一起，比如统一把他们安放到数组的末尾，让全部有配对值的index集中在前面，那么这些有效值的数量就代表了剩余卡片中所有的可能的配对数量，并且在下一次进行挑选3张卡片后直接在有效值的范围中进行遍历即可。这样的设计省去了每次重新进行的庞大计算量，使得最初计算一次匹配数后能够有效的保留结果并重用他们，从而进一步提升执行效率。</p>
+<p>最后，当游戏结束的时候，那个庞大的C数组中所有的元素也都成了0，即没有剩余的配对了。当用户重新开启新一局的游戏时，就需要再次重新计算出所有的1080个结果吗？或许是吧。难道没有更好的解决方案吗？试想一下，当初决定在数组中”删除了包含这些卡片的所有配对“时，其实可以不用真的删除（赋值为0），当找到第一个需要删除的配对项时，我们可以把它直接跟数组的最后一个配对交换位置，当找到第二个需要删除的配对项时，我们把它跟数组中倒数第2个配对交换位置，保证每次卡片消除后，无效的配对全部交换到了底部，有效的全部保留在上面，这样在不会改动数组数据的情况下，仅仅通过交换他们的位置实现数组的分组：上面的有效区和下面的无效区，其中有效区的配对数量就是剩余的配对数量。不仅省去了修改和删除的操作，而且在交换效率上也高于之前的设计。</p>
+<p>至于有没有更好的算法能减少首次循环次数，应该有的。先这样吧，今天写到这里。<a href="http://github.com/hksx1987/JKSET" target="_blank" rel="noopener">最后放个源码</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/jkset/" data-id="ck2hbe6z6003gz1jb9brua5f4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/Hexo-Setup/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hexo搭建博客总结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/gesture-recognizer/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">iOS手势交互</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

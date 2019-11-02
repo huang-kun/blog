@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>傻瓜式多指交互图片裁剪框 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="故事概述说起来都是快两年前的故事了。由于产品迭代，需要优化图片裁剪功能，于是我找到了TOCropViewController开源库，虽然效果很赞，但是仍然不能满足产品经理对自家app的订制要求。为了在有限开发周期内做出新的效果，我也不得不在开源库的里直接修改源码，也利用休息时间给人家的库添了一些新特性，比如本来只支持单方向旋转的TOCropView，现在也支持双向旋转了。现在在这里写篇博客，打算总">
+<meta name="keywords" content="cropbox,NS_OPTIONS,位移运算">
+<meta property="og:type" content="article">
+<meta property="og:title" content="傻瓜式多指交互图片裁剪框">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;MultiTouchBox&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="故事概述说起来都是快两年前的故事了。由于产品迭代，需要优化图片裁剪功能，于是我找到了TOCropViewController开源库，虽然效果很赞，但是仍然不能满足产品经理对自家app的订制要求。为了在有限开发周期内做出新的效果，我也不得不在开源库的里直接修改源码，也利用休息时间给人家的库添了一些新特性，比如本来只支持单方向旋转的TOCropView，现在也支持双向旋转了。现在在这里写篇博客，打算总">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;MultiTouchBox&#x2F;box1.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;MultiTouchBox&#x2F;box2.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;MultiTouchBox&#x2F;box3.png">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.697Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;MultiTouchBox&#x2F;box1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-MultiTouchBox" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/MultiTouchBox/" class="article-date">
+  <time datetime="2017-11-11T02:12:52.000Z" itemprop="datePublished">2017-11-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      傻瓜式多指交互图片裁剪框
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="故事概述"><a href="#故事概述" class="headerlink" title="故事概述"></a>故事概述</h2><p>说起来都是快两年前的故事了。由于产品迭代，需要优化图片裁剪功能，于是我找到了<a href="https://github.com/TimOliver/TOCropViewController" target="_blank" rel="noopener">TOCropViewController</a>开源库，虽然效果很赞，但是仍然不能满足产品经理对自家app的订制要求。为了在有限开发周期内做出新的效果，我也不得不在开源库的里直接修改源码，也利用休息时间给人家的库添了一些新特性，比如本来只支持单方向旋转的<code>TOCropView</code>，现在也支持双向旋转了。现在在这里写篇博客，打算总结下当时开发的技术经验。</p>
+<a id="more"></a>
+
+<p>在手机上进行图片编辑，肯定需要多手势的交互。在我印象中，这种交互来自于iOS自带的相册编辑功能，或者<code>TOCropViewController</code>那样：</p>
+<ol>
+<li>单指拖拽来改变裁剪框的大小</li>
+<li>两指捏合来缩放背景图片</li>
+<li>单指拖拽来移动放大的图片，查看图片细节</li>
+</ol>
+<p>我相信这是主流的图片编辑app的交互方式，也适用于移动端专业级的图片处理，但是最终没有用在公司的app项目中。我们公司在研发K12中小学拍照搜题app，先用手机拍下练习题，然后精准定位并裁剪出一道题目的需求，而我当时的工作是负责图片编辑的体验优化。之所以没有做成上面的样子，是因为：</p>
+<ol>
+<li>产品使用对象是学生，而非设计师或者修图爱好者</li>
+<li>使用裁剪题目的裁剪框，需要简单、傻瓜、快速的特点，能上手即用，而不是需要花时间学习如何使用</li>
+</ol>
+<p>经过开发迭代和不断完善以后，就出现了一个适合自家app的裁剪框，有如下基本特征：</p>
+<ol>
+<li>可以使用多手势交互，但是多手势只能用于裁剪框本身，而背景图是尺寸是不随着手势交互而改变的</li>
+<li>单指拖拽裁剪框的中间区域，可以移动裁剪框</li>
+<li>单指改变裁剪框的大小</li>
+</ol>
+<p>还有如下的加分特征：</p>
+<ol>
+<li>裁剪框能缩放到很窄，允许窄到只定位一行字</li>
+<li>裁剪框的实际交互区域，能够根据自身size大小进行自适应调整位置，方便用户操作</li>
+<li>允许两个以上的手指同时编辑裁剪框</li>
+</ol>
+<br />
+
+<h2 id="技术思路"><a href="#技术思路" class="headerlink" title="技术思路"></a>技术思路</h2><h4 id="区域定义"><a href="#区域定义" class="headerlink" title="区域定义"></a>区域定义</h4><p>裁剪框其实就是一个<code>frame</code>，除了自身有position和size的属性以外，还应该带有几个交互区域：四个角落 + 四个边框 + 中心区域。比如用户手指放在框的右下角，开始向外拉动时，那么开发者需要计算出用户触屏的location是否在裁剪框的任意一个交互区域内，当识别出是右下角的区域后，那么该区域的行为是改变frame的size，但是origin固定不变，从而使得裁剪框从右下方变大或者缩小。于是在这个区域内根据用户手指移动的偏移量，计算出新的frame，设置给裁剪框，达到更新裁剪框UI的目的。</p>
+<p>我在demo中定义区域的类型为<code>enum</code>，因为每次交互只能在一个特定的区域，要么是右下角，要么是右侧边框。于是定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_ENUM(NSInteger, MYTouchArea) &#123;</span><br><span class="line"></span><br><span class="line">    // 手指在裁剪框区域之外</span><br><span class="line">    MYTouchAreaNone                     = 0,</span><br><span class="line">    </span><br><span class="line">    // 手指在裁剪框边缘</span><br><span class="line">    MYTouchAreaTopEdge                  = 1 &lt;&lt; 0,</span><br><span class="line">    MYTouchAreaLeftEdge                 = 1 &lt;&lt; 1,</span><br><span class="line">    MYTouchAreaRightEdge                = 1 &lt;&lt; 2,</span><br><span class="line">    MYTouchAreaBottomEdge               = 1 &lt;&lt; 3,</span><br><span class="line">    </span><br><span class="line">    // 手指在裁剪框角落</span><br><span class="line">    MYTouchAreaTopLeftCorner            = MYTouchAreaTopEdge | MYTouchAreaLeftEdge,</span><br><span class="line">    MYTouchAreaTopRightCorner           = MYTouchAreaTopEdge | MYTouchAreaRightEdge,</span><br><span class="line">    MYTouchAreaBottomLeftCorner         = MYTouchAreaBottomEdge | MYTouchAreaLeftEdge,</span><br><span class="line">    MYTouchAreaBottomRightCorner        = MYTouchAreaBottomEdge | MYTouchAreaRightEdge,</span><br><span class="line">    </span><br><span class="line">    // 手指在裁剪框中心区域</span><br><span class="line">    MYTouchAreaCentralRegion            = 1 &lt;&lt; 4,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>至于为什么每个区域背后没有单纯使用0,1,2…这样的连续值，是为了解决多指交互时候的bug。说实话，当时在开发的时候，我没有太多<code>位移运算</code>的概念，除了常见的<code>UIView</code>文档里的<code>typedef NS_OPTIONS(NSUInteger, UIViewAnimationOptions)</code>这样的类型会接触一下，但是用在这里确实是个好东西，而且并不是说只有在<code>NS_OPTIONS</code>中才会使用位移运算，而是使用它需要解决什么样的问题。</p>
+<p>首先简单总结下位移运算：<code>&lt;&lt;</code>是常见的左移运算：</p>
+<ul>
+<li><code>1 &lt;&lt; 0</code>就是二进制中，把<code>1</code>向左移动0位，于是得到的二进制结果可以表示为<code>0b0001</code>，其实就是十进制的数字1</li>
+<li><code>1 &lt;&lt; 1</code>就是把<code>1</code>向左移动1位，于是得到的二进制为<code>0b0010</code>，即十进制数字2</li>
+<li><code>1 &lt;&lt; 2</code>就是把<code>1</code>向左移动2位，于是得到的二进制为<code>0b0100</code>，即十进制数字4</li>
+</ul>
+<p>所以，我们可以将裁剪框的上边框<code>topEdge</code>设为<code>0b0001</code>，将左边框<code>leftEdge</code>设为<code>0b0010</code>，这样实现的好处是能够让左上角<code>topLeftCorner</code>表示成<code>topEdge | leftEdge</code>二者<code>或运算</code>的结果，即<code>0b0011</code>，于是左上角不再是一个完全独立的区域，而是两个相邻边框的交界处。比如右上角就是<code>0b0101</code>，即<code>topEdge | rightEdge</code>的结果。</p>
+<p>在实际使用裁剪框的时候，用户可能左手出一个手指放在左上角，右手出一个手指放在右上角，同时向外拉伸裁剪框，但是左上角和右上角两个区域在计算新的frame时候，各自都会改变<code>frame.origin.y</code>的值，这样的重复计算使得裁剪框的上边框以双倍的速度向上方移动，造成了边框移动过快的bug。通过上面的类型定义，就可以找到一个解决方法：</p>
+<ul>
+<li>在交互开始时，把两个区域进行<code>与运算</code>，找出它们的共同区域；比如拿左上角和右上角例子来说，就是<code>0b0011 &amp; 0b0101 = 0b0001</code>，即<code>topEdge</code>，说明两个角落区域共同占有上边框的区域</li>
+<li>让其中一个区域剔除重复的部分，方法是<code>异或运算</code>，比如从左上角剔除上边距的方法是<code>0b0011 ^ 0b0001 = 0b0010</code>，得到结果是<code>leftEdge</code>，于是左手手指的交互从左上角区域变为左边框区域，因此不再能改变上边框的位置，此时上边框只能由右手手指来调整，所以不再出现双倍速度的问题</li>
+</ul>
+<p>既然如此，为什么定义时还坚持使用<code>enum</code>而不是<code>options</code>，我认为每个特定区域有自己的计算规则，以及响应手势的优先级，所以类型上区分明确一些确实能提高代码的可读性。如果使用<code>NS_OPTIONS</code>定义<code>MYTouchArea</code>，我相信也可以解决问题，所以使用哪种类型，也算个人喜好吧～</p>
+<br />
+
+<h4 id="区域面积自适应"><a href="#区域面积自适应" class="headerlink" title="区域面积自适应"></a>区域面积自适应</h4><p>想象一下：如果根据一个frame生成最简单的交互区域图的话：</p>
+<ol>
+<li>在frame的四条边向外和向内增加一些面积，作为四个边的接触区域</li>
+<li>将其的四个角落分别作为中心点，绘制4个正方形作为角落区域</li>
+<li>余下frame内部的所有区域即为中心区域</li>
+</ol>
+<p>当用户手指接触到哪个区域，即可按照该区域的规则来改变裁剪框。在实际的产品研发过程中，产品经理希望裁剪框能够做到足够小，比如满足只裁剪出一行字的需求，结果裁剪框尺寸过小，导致上下边框的间距非常窄，如果每个边框在内部都保留自己的边框区域的话，此时也就没有留给任何中心区域的空间了。如果没有中心区域，用户将无法移动裁剪框；如果完全取消内部边框区域，那么拖拽边框的体验就很糟糕。</p>
+<p>如果从用户体验的角度出发，设计出的裁剪区域就是可变化的。比如在很小的frame中，既可以移动又能够缩放的话，可以将frame内部全部留给中心区域，缩放区域围绕在frame周围，像这样：</p>
+<img src="/MultiTouchBox/box1.png" class="">
+
+<p>当裁剪框具备足够空间时，就可以将其内边缘分出一些面积给边框和角落：</p>
+<img src="/MultiTouchBox/box2.png" class="">
+
+<p>再比如实现像裁剪一行字这样的变态需求，就是裁剪框上下边框间距很窄，但是左右边框间距足够宽裕，这时候可以将左右侧的内边缘分出一些面积作为左右边框的触点延伸：</p>
+<img src="/MultiTouchBox/box3.png" class="">
+
+<br />
+
+<h2 id="完整Demo"><a href="#完整Demo" class="headerlink" title="完整Demo"></a>完整Demo</h2><p><a href="https://github.com/huang-kun/MyLittleCraft" target="_blank" rel="noopener">MyLittleCraft</a> 在其中点击MultiTouchBox</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/MultiTouchBox/" data-id="ck2hbe6y10026z1jb2w4q91tz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/swift_command_line/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Swift构建命令行工具
+        
+      </div>
+    </a>
+  
+  
+    <a href="/BelowHeaderRefreshing/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">iOS下拉刷新</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

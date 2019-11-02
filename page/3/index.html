@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="黄琨的博客">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;page&#x2F;3&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:locale" content="zh-cn">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-fastlane-plugin" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/fastlane-plugin/" class="article-date">
+  <time datetime="2017-05-06T03:24:56.000Z" itemprop="datePublished">2017-05-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/fastlane-plugin/">fastlane插件</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><code>fastlane action</code>是fastlane官方定义好的行为，比如:</p>
+<ul>
+<li>scan 测试</li>
+<li>gym 打包</li>
+<li>cocoapods 运行<code>pod install</code></li>
+<li>clear_derived_data 清理Xcode的项目缓存数据</li>
+<li>increment_build_number 自动增加build号</li>
+<li>sigh 生成PP文件</li>
+<li>更多详见<a href="https://docs.fastlane.tools/actions/" target="_blank" rel="noopener">fastlane action docs</a></li>
+</ul>
+<p>而fastlane的插件是允许开发者自己来创建action，满足开发者使用和定制自己需要的服务，比如fastlane的开发者就在自己的github里写了一个<code>appicon</code>插件，用于自动化制作出不同尺寸的app图标；还有支持上传蒲公英测试平台的<code>pgyer</code>插件，不用开启浏览器就直接上传ipa</p>
+<p>这里官方文档中给出的一个<a href="https://docs.fastlane.tools/actions/#plugins" target="_blank" rel="noopener">插件列表</a></p>
+<p>比如添加蒲公英插件，方法就是<code>fastlane add_plugin pyger</code>，fastlane会将安装插件并添加到<code>Pluginfile</code>中，完成后使用插件就跟使用action是一样的，可以在<code>Fastfile</code>中创建由插件提供方法的lane，关于怎么调用api和传递参数，在插件自己的</p>
+<p>而安装<code>appicon</code>插件需要依赖于<code>ImageMagick</code>，如果没有安装的话，首先要<code>brew install imagemagick</code></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/fastlane-plugin/" data-id="ck2hbe6w20010z1jb53072dr7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-fastlane-init" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/fastlane-init/" class="article-date">
+  <time datetime="2017-05-05T02:23:50.000Z" itemprop="datePublished">2017-05-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/fastlane-init/">fastlane初始化</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>fastlane的初始化需要依赖一个项目，首先进入<code>terminal</code>，将路径设置到自己项目的主目录中，然后调用<code>fastlane init</code>，接着命令行会向你索取苹果开发者的id，输入后即可自动被写入fastlane的配置中，顺利的话，最终在项目主目录下生成一个名为<code>fastlane</code>的文件夹。</p>
+        
+          <p class="article-more-link">
+            <a href="/fastlane-init/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/fastlane-init/" data-id="ck2hbe6vy000uz1jbdvu88uws" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-fastlane-signing" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/fastlane-signing/" class="article-date">
+  <time datetime="2017-05-04T08:39:32.000Z" itemprop="datePublished">2017-05-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/fastlane-signing/">fastlane证书和签名</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>开发一个iOS的app，如果需要真机调试，需要推送服务，或者发布到商店的话，就少不了证书和PP文件这些必需品。<a href="http://www.cnblogs.com/cywin888/p/3263027.html" target="_blank" rel="noopener">关于Certificate、Provisioning Profile、App ID的介绍及其之间的关系</a>这篇文章对证书等概念做了介绍，非常详尽；另外<a href="https://krausefx.com/blog/the-developer-part-of-ios-code-signing-doesnt-add-any-security-to-anything" target="_blank" rel="noopener">What is the value of iOS code signing</a>也提出了代码签名的概念以及存在问题。</p>
+        
+          <p class="article-more-link">
+            <a href="/fastlane-signing/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/fastlane-signing/" data-id="ck2hbe6w70014z1jb9j2t4qtd" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-fastlane-installation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/fastlane-installation/" class="article-date">
+  <time datetime="2017-05-04T02:10:10.000Z" itemprop="datePublished">2017-05-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/fastlane-installation/">fastlane的简介和安装</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="fastlane简介"><a href="#fastlane简介" class="headerlink" title="fastlane简介"></a>fastlane简介</h2><p>fastlane是一款开源的ruby脚本工具，用于app进行自动化测试、打包、提交、发布的一体化服务，支持iOS和Android</p>
+        
+          <p class="article-more-link">
+            <a href="/fastlane-installation/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/fastlane-installation/" data-id="ck2hbe6w1000yz1jbd9el8nwi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-contentOffset" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/contentOffset/" class="article-date">
+  <time datetime="2017-02-06T03:43:03.000Z" itemprop="datePublished">2017-02-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/contentOffset/">contentOffset和bounds.origin的区别</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我在学习和理解<code>UIScrollView</code>的过程中，认识到了其属性<code>contentOffset</code>与<code>bounds.origin</code>之间的关系：设置<code>contentOffset</code>其实质上是改变自身的<code>bounds.origin</code>。以下两篇文章，阐述了<code>UIScrollView</code>的本质：</p>
+<ul>
+<li><a href="https://www.objccn.io/issue-3-2/" target="_blank" rel="noopener">理解 Scroll Views</a></li>
+<li><a href="https://oleb.net/blog/2014/04/understanding-uiscrollview/" target="_blank" rel="noopener">Understanding UIScrollView</a></li>
+</ul>
+<p>这样的话，为什么还需要<code>contentOffset</code>这个属性呢？因为调用<code>setContentOffset:</code>会触发滑动的行为，因此也会调用<code>scrollViewDidScroll:</code>的代理方法；而直接设置<code>bounds.origin</code>就不会。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/contentOffset/" data-id="ck2hbe6vp000hz1jb5u7w6ht5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Parallax-Scrolling" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/Parallax-Scrolling/" class="article-date">
+  <time datetime="2017-01-28T03:34:47.000Z" itemprop="datePublished">2017-01-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/Parallax-Scrolling/">视差滑动</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这里介绍下什么是视差滑动<code>Parallax Scrolling</code>，以及如何将视差滑动的概念与<code>UIScrollView</code>相结合。</p>
+        
+          <p class="article-more-link">
+            <a href="/Parallax-Scrolling/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/Parallax-Scrolling/" data-id="ck2hbe6vj0009z1jb9bf95ntg" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-paging-scroll" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/paging-scroll/" class="article-date">
+  <time datetime="2016-12-27T10:56:58.000Z" itemprop="datePublished">2016-12-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/paging-scroll/">照片app的翻页浏览</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>早在<code>WWDC 2010</code>的时候，苹果工程师介绍了如何简单实现iOS自家的照片浏览app：用户可以左右照片翻页，对单个照片进行放大缩小。今天学习源码后在这里做个笔记。</p>
+<p>（2017年1月28日更新：今天是大年初一，开源一个<code>AFTPhotoScroller</code>，实现iOS Photo App的照片浏览功能，<a href="https://github.com/huang-kun/AFTPhotoScroller/blob/master/README_CN.md" target="_blank" rel="noopener">点击这里查看中文简介</a>）</p>
+        
+          <p class="article-more-link">
+            <a href="/paging-scroll/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/paging-scroll/" data-id="ck2hbe6yg002uz1jbhxqy0j95" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-scale-like-button" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/scale-like-button/" class="article-date">
+  <time datetime="2016-12-19T02:05:59.000Z" itemprop="datePublished">2016-12-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/scale-like-button/">增加按钮的可点击区域</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这里简述了按钮虽小，但不可忽视体验的问题。比如在iOS上创建一个点赞的按钮，显示一个小图标，可点击。</p>
+        
+          <p class="article-more-link">
+            <a href="/scale-like-button/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/scale-like-button/" data-id="ck2hbe6wl001ez1jbdvsgg4au" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-scroll-to-dismiss-keyboard" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/scroll-to-dismiss-keyboard/" class="article-date">
+  <time datetime="2016-12-11T11:39:34.000Z" itemprop="datePublished">2016-12-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/scroll-to-dismiss-keyboard/">滑动撤销键盘</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原来撤销键盘的方法还可以更优雅一点。</p>
+<p>最近我在处理UITextView的键盘撤销问题上，听取了产品负责人提出的意见。比如现在有这么一个需求：进入一个界面，在手机屏幕上方展示一个文本编辑框(UITextView)，点击文本框于是弹出键盘，进行文字输入。但是iOS的默认键盘有一些不友好的设计：没有撤销按钮。所以当键盘弹出后，只有通过点击文本框以外的背景，然后撤销键盘，这通常是用户熟悉的让键盘撤销的交互体验。</p>
+<p>现在正好遇上一个尴尬的场景，在下图中，如果让用户通过点击文本框以外的灰色区域来撤销键盘的话，就成了很糟糕的体验，因为基本上没有多少可点击的区域留给用户。</p>
+        
+          <p class="article-more-link">
+            <a href="/scroll-to-dismiss-keyboard/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/scroll-to-dismiss-keyboard/" data-id="ck2hbe6wv001hz1jb0ilm2k3j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Hexo-Setup" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/Hexo-Setup/" class="article-date">
+  <time datetime="2016-12-11T09:57:40.000Z" itemprop="datePublished">2016-12-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/Hexo-Setup/">Hexo搭建博客总结</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>说实话，这是我第二次尝试hexo的搭建，具体的流程参考了以下的博客：</p>
+        
+          <p class="article-more-link">
+            <a href="/Hexo-Setup/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/Hexo-Setup/" data-id="ck2hbe6vf0005z1jbegp1ea7i" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web/" rel="tag">web</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/">Next &amp;raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

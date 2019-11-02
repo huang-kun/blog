@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Touch Painter制作心得 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在阅读了《iOS设计模式解析》以后，作者为了介绍设计模式而制作一个绘画应用，我在这里总结了一下学习经验。">
+<meta name="keywords" content="proj">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Touch Painter制作心得">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;touch-painter&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="在阅读了《iOS设计模式解析》以后，作者为了介绍设计模式而制作一个绘画应用，我在这里总结了一下学习经验。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.948Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-touch-painter" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/touch-painter/" class="article-date">
+  <time datetime="2015-05-09T15:00:20.000Z" itemprop="datePublished">2015-05-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Touch Painter制作心得
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在阅读了《iOS设计模式解析》以后，作者为了介绍设计模式而制作一个绘画应用，我在这里总结了一下学习经验。</p>
+<a id="more"></a>
+
+<h2 id="Core-Graphics"><a href="#Core-Graphics" class="headerlink" title="Core Graphics"></a>Core Graphics</h2><p>对于使用CoreGraphics函数绘图，需要注意：</p>
+<p>如果出现错误提示<code>Error: CGContextAddLineToPoint: no current point.</code>，说明没有调用CGContextMoveToPoint()的情况下直接调用CGContextAddLineToPoint()</p>
+<p>绘制实心圆（点）的函数存在一个副作用：调用它会清除之前未显示的绘图操作，因此如果需要避免清除之前的绘图操作，首先调用CGContextStrokePath，然后调用CGContextFillEllipseInRect，就不会清除之前画好的操作。</p>
+<p>如果在设置了一条线，调用绘制函数StrokePath后，当前的状态结束。如果继续绘制另一条线，需要重新调用MoveToPoint，否则不会显示后面的内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CGContextStrokePath(context)</span><br><span class="line">CGContextDrawPath(context, kCGPathStroke)</span><br></pre></td></tr></table></figure>
+
+<h2 id="程序设计"><a href="#程序设计" class="headerlink" title="程序设计"></a>程序设计</h2><p>CanvasViewController在绘制图画之前，首先创建一个顶级的mark，用于添加绘图中的每个点或者每条线，储存他们方便以后的撤销等操作。顶级的mark需要有addMark:的操作，因此就这个topMark就创建为一个Stroke的实例。当用户画点的时候，创建一个Dot实例，然后加入到topMark；当用户画线的时候，首先创建一个Stroke实例，然后在画线过程中，创建Vertex实例，将Vertex添加到stroke中作为stroke的child，画线结束时，将stroke添加到topMark他的其child。这样topMark就包含若干个点（Dot）和线（Stroke），点是独立的对象，而线包含了许多个Vertex对象。<br>实现绘制</p>
+<p>对于Dot, Vertex, Stroke三个类来说，各自实现了同名的drawWithContext:方法。<br>Vertex只是一个记录点坐标的标记类，不仅是Stroke中每个点的构成，也作为Dot的父类，为其提供坐标信息，因此Vertex只需要调用CGContextAddLineToPoint:即可。</p>
+<p>Dot是一个独立点，需要调用CGContextFillEllipseInRect()即可。注意绘制一个点不可以首先调用CGContextMoveToPoint: 然后CGContextAddLintToPoint:传入同一个点坐标，这样的结果是什么也没有。</p>
+<p>Stroke设计为一个组合对象，作为顶级的stroke既包含dot又包含其他含有vertex的stroke线条，因此他的实现就是遍历自己的每一个child，让child调用自己的drawWithContext: 最后按顺序依次调用那些分散实现的CG绘制函数，绘出图案。但是需要注意，如果child是dot对象，那么调用CGContextFillEllipseInRect()会产生一个副作用：清除之前的所有绘制图案。</p>
+<p>解决方案是：在Stroke对象中遍历每个child的时候判断类型，如果是Dot，那么就调用StrokePath先画好之前的操作，然后调用CGContextFillEllipseInRect()，让设置self.shouldStartNewStroke为YES，于是绘制实心圆的函数就不会清除已经画好的内容。接着在处理child是Vertex类的时候，如果shouldStartNewStroke标记为YES，说明是一个新的线条，那么需要MoveToPoint: 否则就直接AddLineToPoint: 最后在执行CGContextStrokePath之后，别忘了重新设定shouldStartNewStroke为YES，这样下次画线条才会生效。缺点：绑定了Stroke和Dot间的藕合度。</p>
+<h2 id="撤销与恢复"><a href="#撤销与恢复" class="headerlink" title="撤销与恢复"></a>撤销与恢复</h2><p>对于撤销与恢复的操作，本质上是实现两个栈：撤销栈与恢复栈。首先在一个run loop中，将需要撤销的操作依次注册到撤销栈中，当发送撤销消息的时候，就把撤销栈顶的操作转移到恢复栈里，以便之后的恢复操作。</p>
+<p>由于topMark是一个良好设计的树形数据结构，因此该数据结构本身即可以当作为撤销栈，在每次topMark添加新的mark时候相当于注册进了撤销栈，那么发送撤销命令相当于让topMark删除自己的末尾节点，然后更新视图，即显示了撤销操作。因此该项目中只需要创建一个名为redoStack的恢复栈，他的作用是收集每次被撤销的mark，在发送恢复命令的时候，从恢复栈顶获取mark，再重新加入到topMark中，然后更新视图，即显示了恢复操作。</p>
+<p>补充：</p>
+<ol>
+<li>注册撤销与在手势操作中实现添加mark的机制是相同的，因此不用担心会将每一个vertex顶点注册为每次撤销对象，原因是添加到topMark中的mark类型目前仅有两种：Dot 和 Stroke，而他们才是需要被撤销和恢复的对象，即每次撤销的是一整条线，而非组成一条线的每个顶点。</li>
+<li>恢复栈需要在每次绘制新图案时，在新的mark创建并展示之后，及时进行清理在恢复栈中所有旧的mark，因为没有必要保留原来被撤销且此时已经不再需要的mark，而撤销的意义不就是为了清理画布，重新画出更好的作品嘛。</li>
+</ol>
+<h2 id="管理Modal-Presentation"><a href="#管理Modal-Presentation" class="headerlink" title="管理Modal Presentation"></a>管理Modal Presentation</h2><p>从画布vc中点击显示调色板或者展示作品集，都采用Modal Presentation，因此这里借助了一个CoordinatingViewController（后面简称中介vc）作为中介者的概念，管理弹出和取消展示vc。当然和原作不同的是，这里没有存粹的实现中介者模式，毕竟创建一个中介者的目的是为了减少彼此vc之间的藕合度。</p>
+<p>在实现这个部分的时候，我把中介vc做为了画布vc的父类，其作用仅仅是为了分担画布vc中的一些代码，让画布vc专注于绘画和保存，而他专注于管理Modal Presentation以及兼容iPad和iPhone屏幕的展示问题。比如展示调色板vc重新选择颜色，然后点击完成按钮取消调色板vc。不过出现的问题是：每个vc在被展示和取消的过程中仍然需要实现数据的传递，比如取消调色板的时候，就需要把更新后的颜色以及线条粗细传回到画布vc中，而作为父类的中介vc实在不方便干涉自己孩子和其他vc们之间的交流细节，也不明白画布vc具体需要回传什么数据，于是就声明一个<code>retrievePaletteSettings:</code>的方法，留给子类去重载，在取消调色板之前让子类有机会去获得自己需要的数据。同样在展示作品集vc之前，可以让子类去重载一些行为（比如保存），而父类无需了解这些细节。</p>
+<h2 id="设计弊端"><a href="#设计弊端" class="headerlink" title="设计弊端"></a>设计弊端</h2><p>由于每次绘制新的mark时候，都需要将之前全部的mark进行重绘，因此在性能上没有占到便宜，即添加的mark越多，重绘的消耗就越多。虽然目前不存在leak的问题，而且每次重绘过后，内存会及时得到释放，但是每次的重绘会使得内存瞬间进行一次攀升。当然这样的设计自然不适用于精准的绘图应用，可以适用于简单的手写笔记、手写便签等方面的应用。该项目对mark数据结构的精准设计正是该应用的核心。本人认为该项目主要是作者从iOS开发的角度介绍设计模式，所以项目的重点本身在于设计模式，而非绘图应用。虽然算不上killer app，但我同样从中学到了不少知识。</p>
+<h2 id="处理手势冲突"><a href="#处理手势冲突" class="headerlink" title="处理手势冲突"></a>处理手势冲突</h2><h4 id="绘画时，手指即触笔"><a href="#绘画时，手指即触笔" class="headerlink" title="绘画时，手指即触笔"></a>绘画时，手指即触笔</h4><p>推荐通过重载原始的touch行为来确定用户是轻点还是画线操作，对于简单涂鸦的实现也可以通过GestureRecognizer来实现，只是在后面的分析中就可以看到那样做的话也许不能够很好的处理多个手势识别的冲突问题。（个人观点）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">touchesBegan:withEvent:</span><br><span class="line">touchesMoved:withEvent:</span><br><span class="line">touchedEnded:withEvent:</span><br><span class="line">touchesCancelled:withEvent:</span><br></pre></td></tr></table></figure>
+
+<p>当用户在<code>touchesBegan:withEvent:</code>的时候，调用locationInView:记录一个起始触点，之后在结束touch的时候来判断是否为点击行为。这里还需要创建一个Stroke实例，然后添加到topMark中作为child。</p>
+<p>接着在<code>touchesMoved:withEvent:</code>中创建Vertex，添加到stroke对象作为其child，然后更新canvasView，显示topMark。由于stroke已经是topMark的child，所以会显示topMark之前的绘图和现在的stroke。</p>
+<p>最后在<code>touchedEnded:withEvent:</code>中调用previousLocationInView:获得一个用户之前的触点，如果该触点等于起始触点，说明用户画的只是一个点，于是创建一个Dot实例，在加入dot作为topMark的child之前，先删除那个stroke，因为如果用户只是画点，那么不会调用画线的方法，就需要把在开始时候加入的stroke删除，方法就是删除topMark的lastChild即可。在加上dot后，需要更新canvasView，显示dot。如果判断结果是用户是画线的行为，那么直接跳过这些步骤。</p>
+<p>同时需要处理好<code>touchesCancelled:withEvent:</code>的情况。</p>
+<h4 id="双指撤销与恢复"><a href="#双指撤销与恢复" class="headerlink" title="双指撤销与恢复"></a>双指撤销与恢复</h4><p>首先我体验并借鉴了sketches的应用，认为使用双指进行撤销与恢复操作还是一个很便利的方法。既然我也决定使用双指操作，那么同样也需要一个统一的规范：比如两根手指向左滑动，即撤销；向右滑动，即恢复撤销。而之后就不可避免的出现了处理多个手势识别冲突的问题。我当然考虑过使用UISwipeGestureRecognizer来实现撤销和恢复，但是测试的结果不是很理想，单纯从用户的角度考虑，也许用户进行两指撤销的时候，不会关心是不是swipe手势，更多的希望让两个手指快速的在屏幕上扫过而实现撤销，结果是该手势有可能不会被识别为标准的swipe，比如用户可能将手指拖动了一小段距离后变成扫动，就成了pan＋swipe的混合手势，最终呈现出的一个令人失望的结果。</p>
+<p>简单以这种pan＋swipe的手势为例，如果画线的操作是通过touchesMoved:withEvent:而非UIPanGestureRecognizer来实现的话，进行这种撤销手势必然会首先留下一道拖动的线条，然后才是撤销；因为按照系统响应机制来看，系统会先将手势的识别交给canvasView的GestureRecognizer的对象进行处理（如果添加了的话），由于这时候用户的手指还处于刚接触了设备屏幕的阶段，GestureRecognizer目前无法识别出这是一个具体的什么手势，因此是StatePossible，同时canvasView也会收到touchesBegan:withEvent:的消息，无论这里实现了什么绘图操作，都会被调用；接着用户的手指稍稍移动的时候，由于移动的程度特别细微，因此还是无法识别出是哪个手势，但是这时canvasView会收到touchesMoved:withEvent:的消息，无论在这里实现了什么绘图操作，同样也会被调用；直到系统通过用户的手指移动了足够长的距离和足够快速率以至于确定是swipe手势的时候，才会去执行相关的方法，于此同时，发送touchesCancelled:withEvent:的消息给canvasView，而整个过程没有发送关于touchesEnded:withEvent:的消息，总之得到的并不是一个理想的结果。（这正是默认的情况，但也可以通过设置某个属性来让系统发送touchesEnded:withEvent:）</p>
+<p>如果画线的操作是通过UIPanGestureRecognizer来实现的话，倒是省去了上面描述的问题，不过呢，新的问题也接踵而至：当系统在同时处理多个手势时，如果识别出了两个手势，默认的处理是实现一个，放弃另一个。很不幸，当pan和swipe相遇的时候，系统选择了pan，放弃了swipe，虽然用户一直努力在撤销，结果不但没有撤销，反而一直在涂鸦。那么能不能让系统在他俩相遇的时候放弃pan而选择swipe呢？答案是可以的，直接的方法是发送 <code>[pan requireGestureRecognizerToFail: swipe]</code> 消息，结果当系统识别出pan的时候，不会马上执行pan的action方法，而是等待一段短暂的时间，只要在此期间没有swipe被识别出来的话，才会执行pan；如果在此期间识别出了swipe，系统会转而执行swipe，放弃pan。经过测试后发现，只要用户swipe的话，系统都可以成功识别，并且放弃pan的行为，但同时也明显暴露了该方案的一个弊端：那段延迟的处理时间，带来了一个糟糕的体验，如果用户用单指画线并且拖动速度稍快的话，线条绘制稍快的部分其实是一段空白，因为系统每次执行的pan都按一个延迟进行处理，如果在此期间识别出手势的特征有可能是swipe（即使稍快的拖动行为），那么系统都暂时不会执行pan。</p>
+<p>多提一句：UIGestureRecognizerDelegate同样提供了处理多手势冲突的很多方法。上面的那个失败方案也可以通过以下的替代方案来完成。</p>
+<ol>
+<li>分别创建pan和swipe对象，然后设置pan的代理 pan.delegate = self</li>
+<li>实现其中一个UIGestureRecognizerDelegate 方法 shouldRequireFailureOfGestureRecognizer: 那么pan就会成为该方法的gestureRecognizer 参数，接着判断如果otherGestureRecognizer 是swipe的话，可以返回YES，实现放弃pan的操作。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer</span><br><span class="line">shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer</span><br><span class="line">&#123;</span><br><span class="line">    if ([gestureRecognizer isKindOfClass: [UIPanGestureRecognizer class]] &amp;&amp;</span><br><span class="line">        [otherGestureRecognizer isKindOfClass: [UISwipeGestureRecognizer class]] &amp;&amp;</span><br><span class="line">        [otherGestureRecognizer numberOfTouches] == 2) &#123;</span><br><span class="line">        return YES;  // give up pan</span><br><span class="line">    &#125;</span><br><span class="line">    return NO;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这回的测试结果：只要不是刻意地swipe，用户在画线的时候，即使稍快的拖拽行为也是作为pan进行处理，貌似效果好一些，只是进行swipe的时候，有时会因为用户的一点误操作而执行了pan，这样就要求用户必须给出标准的swipe才会执行撤销或恢复操作。</p>
+<p>于是为了更好的实现撤销与恢复，我又不得不重新回到原始的touch处理。这样做是有道理的，毕竟一款绘图的应用，不应该简单的认为创建几个GestureRecognizer就能摆平这个应用，即便是实现简单的涂鸦行为。上述的分析并不是白做的，至少作为一名开发者，我在今后的项目中也大致明白了什么时候该用GestureRecognizer，什么时候该用原始的touch，以及二者混用以后出现的情况等等问题。那么这次的解决方案是：用户的手指接触到屏幕的时候，在touchesBegan:withEvent:中通过手指数量来判断人家是绘图操作还是撤销恢复。如果只有一根手指，就可以认为接下来是绘画，如果两根手指，就是撤销恢复（或者pinch，目前不做介绍），这样首先避免了用户的误操作，即使用户的手势不是标准的swipe，也可以当作后来自定义的宽松式swipe处理。在这里还需要记录用户每根手指触屏的初始坐标，以便后续进行比对。那么有一个方法是储存到CFDictionary中，将UITouch的地址作为key，坐标指针作为value进行保存（之所以不使用NSDictionary是因为NSDictionary对象会自己保留一个key的拷贝，而UITouch没有实现NSCopying协议，相关内容可以参考苹果文档）；之后在touchesEnded:withEvent:中，再从字典中获取用户每根手指触屏的初始值，然后根据手指触屏的初始坐标与结束坐标进行计算来判断用户是否进行的“swipe”操作（这里的swipe是一个非标准的swipe，因为没有考虑速率），如果结果符合这个宽松的swipe，再判断是向左还是向右，向左执行撤销，向右执行恢复。</p>
+<p>最后稍微修正一个小问题：当用户使用这种swipe的时候，如果两根手指的其中一根刚好扫出了屏幕左或右边缘，而第二根手指仍留在屏幕上扫动时，由于此时是一根手指的操作，当然会被理解成在绘图。为了避免此时在touchesMoved:withEvent:中实现任何绘图的操作，可以定义一个isMultiGestureCompleted的BOOL属性来表示用户的撤销或恢复操作是否已经完全结束，只有完全结束以后在允许绘图操作，而像这种还剩一根手指的情况就属于还未结束。那么怎么判断用户什么时候真正结束了多点触屏操作呢？方法是在touchesEnded:withEvent:中做以下判断即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (touches.count == [event allTouches].count) &#123;</span><br><span class="line">    // completed</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="为什么没有UIGestureRecognizer-Subclass"><a href="#为什么没有UIGestureRecognizer-Subclass" class="headerlink" title="为什么没有UIGestureRecognizer Subclass ?"></a>为什么没有UIGestureRecognizer Subclass ?</h4><p>由于上面定义个一个LooseSwipe的手势，为什么实际项目中没有用子类化手势识别的方法将他封装起来，反而让他跟绘图的识别绑定在一起呢？我本人当然希望做封装处理，只是把他做成子类化的手势识别会存在一些问题：从UIResponder的介绍可以看出，当系统检测到触屏行为时，GestureRecongizer会比View先有机会接受event消息，但是在状态为Possible的时候又不能被及时的识别出来，最后没有很好的分清楚处理哪个和放弃哪个的问题。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li>Objective-C编程之道：iOS设计模式解析（Pro Objective-C Design Pattern for iOS）</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/touch-painter/" data-id="ck2hbe6z7003iz1jbg0b7cjq2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/MRC/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          基于引用计数机制的手动内存管理
+        
+      </div>
+    </a>
+  
+  
+    <a href="/objc-dynamic1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Objective-C的动态机制</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>巧用迭代器 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今天总结一下：为什么迭代器更适合实现视频字幕展示或者卡拉OK的歌词高亮匹配。">
+<meta name="keywords" content="ios">
+<meta property="og:type" content="article">
+<meta property="og:title" content="巧用迭代器">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;Enumerator&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="今天总结一下：为什么迭代器更适合实现视频字幕展示或者卡拉OK的歌词高亮匹配。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="https:&#x2F;&#x2F;timgsa.baidu.com&#x2F;timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1541237325756&amp;di=93ccadb5cef2b9c3467822878edf6c63&amp;imgtype=0&amp;src=http%3A%2F%2Fimg.mukewang.com%2F58fda83f00011e1e02470390.jpg">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.696Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;timgsa.baidu.com&#x2F;timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1541237325756&amp;di=93ccadb5cef2b9c3467822878edf6c63&amp;imgtype=0&amp;src=http%3A%2F%2Fimg.mukewang.com%2F58fda83f00011e1e02470390.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Enumerator" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/Enumerator/" class="article-date">
+  <time datetime="2018-11-03T04:35:23.000Z" itemprop="datePublished">2018-11-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      巧用迭代器
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天总结一下：为什么迭代器更适合实现视频字幕展示或者卡拉OK的歌词高亮匹配。</p>
+<a id="more"></a>
+
+<p>假设我打算做一个卡拉OK的歌词高亮，一边播放音乐，一边将对应的歌词句子显示成高亮效果。我随便找了个配图：</p>
+<p><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1541237325756&di=93ccadb5cef2b9c3467822878edf6c63&imgtype=0&src=http%3A%2F%2Fimg.mukewang.com%2F58fda83f00011e1e02470390.jpg" alt="歌词高亮"></p>
+<p>这里先给出一个歌词<code>lrc</code>文件的片段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[00:30.13]岩烧店的烟味弥漫隔壁是国术馆</span><br><span class="line">[00:32.57]店里面的妈妈桑茶道有三段</span><br><span class="line">[00:34.61]教拳脚武术的老板练铁沙掌耍杨家枪</span><br><span class="line">[00:37.34]硬底子功夫最擅长还会金钟罩铁步衫</span><br><span class="line">[00:39.67]他们儿子我习惯从小就耳濡目染</span><br><span class="line">[00:41.96]什么刀枪跟棍棒我都耍的有模有样</span><br><span class="line">[00:44.22]什么兵器最喜欢双截棍柔中带刚</span><br><span class="line">[00:46.73]想要去河南嵩山学少林跟武当</span><br></pre></td></tr></table></figure>
+
+<p>以歌词为例子，从上面的片段中有两个信息：每段歌词文本，以及对应音频播放时间戳（开始时间）。通过解析文本后，我可以获得一个类似这样的model对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@interface LyricsComponent : NSObject</span><br><span class="line"></span><br><span class="line">@property (nonatomic, strong) NSString *text; // 岩烧店的烟味弥漫隔壁是国术馆</span><br><span class="line">@property (nonatomic, assign) int64_t startTime; // 00:30.13 转换成毫秒</span><br><span class="line">@property (nonatomic, assign) int64_t endTime; // 00:32.57 转换成毫秒</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+
+<p>每段歌词就是一个<code>LyricsComponent</code>对象，由于希望精准匹配，这里将时间转换成毫秒的形式。通过这个model，最终可以将歌词文本转化成包含所有段落的集合，暂且称为<code>NSArray &lt;LyricsComponent *&gt; *allComponents</code>，那么该如何实现歌词与音频的时间匹配呢？</p>
+<h2 id="For循环"><a href="#For循环" class="headerlink" title="For循环"></a>For循环</h2><p>最简单的方法就是<code>for循环</code>：首先播放音频，在每播放一毫秒时就去检查歌词的时间，但当前这一毫秒正好在哪段歌词中，以下是代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">- (void)playerCallbackAtTimestamp:(int64_t)currentMillisecond &#123;</span><br><span class="line">    // 集合遍历</span><br><span class="line">    for (LyricsComponent *component in self.allComponents) &#123;</span><br><span class="line">        // 找到匹配的歌词段落</span><br><span class="line">        if (component.startTime &lt;= currentMillisecond &amp;&amp; currentMillisecond &lt; component.endTime) &#123;</span><br><span class="line">            // 取消所有的歌词高亮</span><br><span class="line">            [self cancelAllHighlights];</span><br><span class="line">            // 高亮匹配的歌词</span><br><span class="line">            [component highlight];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>虽然这样可以实现高亮效果，但是仍有改进的空间。我在iOS中使用<code>AVPlayer</code>可以播放音频且能够精确到毫秒级的回调，但是回调时间间隔并不是在每一毫秒，而是每5毫秒。粗略计算一下，一首时长为3分钟的歌曲（180000毫秒），每隔5毫秒回调一次，回调次数为36000次，而每次回调都会因为for循环遍历数组，结果allComponent数组遍历次数为36000次。</p>
+<h2 id="迭代器"><a href="#迭代器" class="headerlink" title="迭代器"></a>迭代器</h2><p>在这个歌词的例子中，有以下特点：</p>
+<ol>
+<li>时间回调非常频繁</li>
+<li>由于歌词段落都是按时间顺序正确排列的，每句歌词都是接着上一句结束后出现的</li>
+</ol>
+<p>于是实现歌词高亮就可以换个思路：让每句歌词来匹配时间，如果匹配上的话就高亮，并且让下一句歌词继续匹配。这里就需要迭代器来帮忙，iOS的集合都有自己的迭代器<code>NSEnumerator</code>。</p>
+<p>迭代器与for循环有什么区别呢？for循环执行结束后会遍历完集合中所有的元素，而迭代器在创建后不会自动去遍历集合的元素，除非调用<code>next</code>进行消费操作，才会获得迭代器中的下一个元素。这样就使得迭代器具备一个资源懒加载的优势：只会在需要的时候才去访问元素。下面是迭代器版本的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- (void)startPlayingMusic &#123;</span><br><span class="line"></span><br><span class="line">    // 在播放音频前，首先创建迭代器，并且取出第一句歌词</span><br><span class="line">    self.lyricsEnumerator = [self.allComponents enumerator];</span><br><span class="line">    self.currentComponent = [self.lyricsEnumerator nextObject];</span><br><span class="line"></span><br><span class="line">    // 然后播放音频</span><br><span class="line">    [self.player play];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)playerCallbackAtTimestamp:(int64_t)currentMillisecond &#123;</span><br><span class="line">    </span><br><span class="line">    // 找到匹配的歌词段落</span><br><span class="line">    if (self.currentComponent.startTime &lt;= currentMillisecond &amp;&amp; currentMillisecond &lt; self.currentComponent.endTime) &#123;</span><br><span class="line">        [self cancelAllHighlights];</span><br><span class="line">        [self.currentComponent highlight];</span><br><span class="line"></span><br><span class="line">        // 消费下一句歌词</span><br><span class="line">        self.currentComponent = [self.lyricsEnumerator nextObject];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过迭代器的方式实现歌词高亮，在播放完一首3分钟的歌曲，遍历allComponent数组的次数仅为一次。对比使用for循环的36000次遍历，当然是迭代器的方式更加性能友好啦。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>迭代器是集合用来懒加载的遍历方式，只有调用next才会去真正访问集合中下一个元素</li>
+<li>由于迭代器的懒加载特性，可以用来优化性能</li>
+</ol>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><ol>
+<li>使用迭代器进行集合遍历是一次性消费操作，在依次遍历完集合的所有元素后，再次调用next则返回nil，如需重新遍历的话，就得生成一个新的迭代器</li>
+<li>本篇内容没有对应的示例demo，仅仅是分析迭代器的使用场景</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/Enumerator/" data-id="ck2hbe6vd0003z1jb0ykx63lq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/ios-swizzling/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          记一次方法交换崩溃的故事
+        
+      </div>
+    </a>
+  
+  
+    <a href="/vinyl-spin/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">唱片效果</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

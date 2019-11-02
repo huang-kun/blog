@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>MySQL翻页请求 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这里说的翻页，其实就是分批次请求数据。 假如我创建一个论坛，尽管数据库里有上百条帖子，但是论坛的网页只能一次显示20条，所以首页展示最近的20条帖子标题，然后点击下一页，就展示后续的20条。">
+<meta name="keywords" content="mysql,pagination,database,数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL翻页请求">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;mysql_pagination&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="这里说的翻页，其实就是分批次请求数据。 假如我创建一个论坛，尽管数据库里有上百条帖子，但是论坛的网页只能一次显示20条，所以首页展示最近的20条帖子标题，然后点击下一页，就展示后续的20条。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http:&#x2F;&#x2F;www.mysqltutorial.org&#x2F;wp-content&#x2F;uploads&#x2F;2011&#x2F;03&#x2F;mysql-limit-offset.jpg">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;mysql_pagination&#x2F;mysql_paging1.png">
+<meta property="og:image" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;mysql_pagination&#x2F;mysql_paging2.png">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.937Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;www.mysqltutorial.org&#x2F;wp-content&#x2F;uploads&#x2F;2011&#x2F;03&#x2F;mysql-limit-offset.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-mysql_pagination" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/mysql_pagination/" class="article-date">
+  <time datetime="2018-01-17T11:03:00.000Z" itemprop="datePublished">2018-01-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MySQL翻页请求
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这里说的翻页，其实就是分批次请求数据。</p>
+<p>假如我创建一个论坛，尽管数据库里有上百条帖子，但是论坛的网页只能一次显示20条，所以首页展示最近的20条帖子标题，然后点击下一页，就展示后续的20条。</p>
+<a id="more"></a>
+
+<p>先写一种最理想的情况：即每增加一个新的帖子，它的相应创建日期也是递增式的。所以暂时不考虑创建时间，直接排序id就好。</p>
+<h2 id="offset翻页"><a href="#offset翻页" class="headerlink" title="offset翻页"></a>offset翻页</h2><p>首先我想到的是，使用<code>limit</code>作为解决方案，<code>LIMIT</code>带有两个参数<code>offset</code>和<code>count</code>，比方说<code>LIMIT 3, 4</code>表示在数据库遍历时，以第一行结果开始遍历，然后在index = 3的地方返回4条结果。</p>
+<p><img src="http://www.mysqltutorial.org/wp-content/uploads/2011/03/mysql-limit-offset.jpg" alt="limit"></p>
+<p>于是请求帖子的语句就可以写成：</p>
+<ul>
+<li>首页最新20条：<code>SELECT title FROM post ORDER BY id DESC LIMIT 0, 20;</code></li>
+<li>后续20条：把limit改成<code>LIMIT 20, 20</code></li>
+<li>接着20条：<code>LIMIT 40, 20</code></li>
+</ul>
+<h3 id="offset翻页的性能问题"><a href="#offset翻页的性能问题" class="headerlink" title="offset翻页的性能问题"></a>offset翻页的性能问题</h3><p>这样做的确符合要求。但是我在网上搜索相关问题后，发现这并不是最好的方式。原因在于随着数据量的增加，limit会带来性能问题。比如同样请求20条贴子，若<code>offset</code>指定为5万的话，那么MySQL就会遍历5万零20条帖子，然后返回最后20条，之前的5万条遍历后记录就这样浪费了。</p>
+<h2 id="last条件翻页"><a href="#last条件翻页" class="headerlink" title="last条件翻页"></a>last条件翻页</h2><p>最常用且避免使用<code>offset</code>的方法是：通过将本页的最后一条记录的id作为分界条件，以该条件继续请求后续的记录。比如下图</p>
+<img src="/mysql_pagination/mysql_paging1.png" class="">
+
+<p>这些帖子中，每页的帖子数量目前指定为<code>page_size</code>。首页是最近的一批帖子，id倒叙排列，从150到100，当获取下一页时，将最后一个浏览的id作为条件，由于是时间倒叙排列，只要搜索后续记录的id小于这个值即可。比如从图中的首页翻到第2页：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT title FROM post WHERE id &lt; 100 ORDER BY id DESC LIMIT page_size;</span><br></pre></td></tr></table></figure>
+
+<p>点击上一页，获取排列靠前的帖子也是类似的，但是需要反转<code>WHERE</code>和<code>ORDER BY</code>的条件，即大于某个id最近的一批结果。比如从图中的第3页翻到第2页：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT title FROM post WHERE id &gt; 93 ORDER BY id ASC LIMIT page_size;</span><br></pre></td></tr></table></figure>
+
+<p>此时获得了从id为94到98的帖子，但是<strong>由于条件中使用了升序排列，所以需要将结果倒叙展示(reverse)才能满足时间倒序</strong>。</p>
+<h3 id="lastId结合get请求"><a href="#lastId结合get请求" class="headerlink" title="lastId结合get请求"></a>lastId结合get请求</h3><p>除了mysql操作，不论点击<code>上一页</code>还是<code>下一页</code>，都是用户向服务器发送翻页请求，然后才执行的数据库操作。请求中需要哪些必要的参数呢？至少需要<code>lastId</code>和<code>翻页方向</code>吧，这样才可以指定翻页id条件、大于还是小于、升序还是降序。比如下图：<code>http://domain.com/forum?last_seen=100&amp;dir=next</code></p>
+<img src="/mysql_pagination/mysql_paging2.png" class="">
+
+<h3 id="排序条件"><a href="#排序条件" class="headerlink" title="排序条件"></a>排序条件</h3><p><strong>按id排序？还是按创建时间排序？</strong></p>
+<p>id只是数据库中每条记录的唯一标识而已，并不能实际代表时间信息。假如数据库中导入了一批来自其他论坛中1年前发布的帖子，那么在插入操作执行后，每插入一条记录后id自增，虽然这些数据的id目前是最大的一批，但是其创建时间却停留在1年前，所以理应不能使用id排序来返回最新的帖子记录。所以：</p>
+<ul>
+<li>帖子列表中需要创建时间的字段，比如datetime类型，使用它来代替lastId和排序条件</li>
+<li>对于频繁性的数据库翻页请求操作，可以考虑把该字段设置为索引(index)，提升遍历效率和性能。</li>
+</ul>
+<p>但是按时间排序也会遇到一个问题：</p>
+<p>如果存在多条帖子的创建时间恰好一致的话，那些正好处在页数分界线且时间重叠的帖子，翻页查询的结果就可能会漏掉它们，导致实际页数与结果不符合。但是记录的创建时间属性一般不太可能像id那样具有唯一的特质，比如同一时刻出现了多条评论的情况当然是允许的，这样基于时间排序的翻页貌似就不可行了。</p>
+<p>到底用哪个排序，估计得看具体业务场景了 ╮(╯_╰)╭</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://www.eversql.com/faster-pagination-in-mysql-why-order-by-with-limit-and-offset-is-slow/" target="_blank" rel="noopener">Faster Pagination in Mysql – Why Order By With Limit and Offset is Slow?</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/mysql_pagination/" data-id="ck2hbe6wg001az1jbafba6fek" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/understand_network/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          理解计算机网络
+        
+      </div>
+    </a>
+  
+  
+    <a href="/swift_command_line/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Swift构建命令行工具</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

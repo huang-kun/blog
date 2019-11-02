@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>斯坦福CS193p-iOS8课程作业之计算器2 | 黄琨的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="cs193p 2015冬季第二次作业解决方案 解决问题：  给计算器加入变量，例如“M”，当然还可以给它赋值（补充内容：对于π的处理） 显示计算器输出的步骤 完美解决括号问题（加分项） 撤销优化（加分项） 报告错误（加分项）">
+<meta name="keywords" content="ios,cs193p,swift">
+<meta property="og:type" content="article">
+<meta property="og:title" content="斯坦福CS193p-iOS8课程作业之计算器2">
+<meta property="og:url" content="http:&#x2F;&#x2F;blog.skywander.cn&#x2F;cs193p-ios8-cal2&#x2F;index.html">
+<meta property="og:site_name" content="黄琨的博客">
+<meta property="og:description" content="cs193p 2015冬季第二次作业解决方案 解决问题：  给计算器加入变量，例如“M”，当然还可以给它赋值（补充内容：对于π的处理） 显示计算器输出的步骤 完美解决括号问题（加分项） 撤销优化（加分项） 报告错误（加分项）">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:updated_time" content="2019-11-02T08:20:54.901Z">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="黄琨的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">黄琨的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">iOS开发</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.skywander.cn"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-cs193p-ios8-cal2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/cs193p-ios8-cal2/" class="article-date">
+  <time datetime="2015-02-10T09:09:29.000Z" itemprop="datePublished">2015-02-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      斯坦福CS193p-iOS8课程作业之计算器2
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>cs193p 2015冬季第二次作业解决方案</p>
+<p>解决问题：</p>
+<ol>
+<li>给计算器加入变量，例如“M”，当然还可以给它赋值（补充内容：对于π的处理）</li>
+<li>显示计算器输出的步骤</li>
+<li>完美解决括号问题（加分项）</li>
+<li>撤销优化（加分项）</li>
+<li>报告错误（加分项）</li>
+</ol>
+<a id="more"></a>
+
+<p>环境：iOS 8, Swift<br>视频：3. Applying MVC.mp4<br>作业：Programming_ Project 2.pdf (Assignment 2)<br>资源：<a href="https://github.com/vojtamolda/cs193p" target="_blank" rel="noopener">点击进入</a></p>
+<h4 id="给计算器加入变量"><a href="#给计算器加入变量" class="headerlink" title="给计算器加入变量"></a>给计算器加入变量</h4><p>比如说我可以输入5+M，然后没有结果显示，因为M是个没有赋值的变量。然后我给M＝3，于是该表达式结果就等于8</p>
+<p>在Assignment 2中的相关提示是：给UI添加两个按钮：M，→M，第一个按钮表示用户点击M后就会将变量M推入栈内（注意入栈的是M，而不是M的value），第二个按钮作用是用户在输入一个数字，点击→M，就会给变量M赋值为屏幕上的这个数字，这样在之后的运算中，M就是个含有固定值的变量，可以在任何含变量的计算表达式中得到结果。例如M=3, 那么 2M+1=7</p>
+<p>思路：</p>
+<ul>
+<li>给CalculatorBrain添加两个新的API - </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 将创建一个变量，然后入栈</span><br><span class="line">fun pushOperand(symbol: String) -&gt; Double?</span><br><span class="line"></span><br><span class="line">// 该字典作用是收集变量和对应值，并且在evaluate()方法中通过variableValues获取变量的值，然后进行计算。</span><br><span class="line">var variableValues: [String, Double]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>对于变量的处理，其实和对运算数的处理十分类似，就是把变量当数字一样入栈就好了，不过问题出现了：目前的Op.Operand类型中，传入的运算数必须是Double，但是M是字母，怎么对待呢？这就说明不能用原有的Op类型处理了，因此添加一个新类型Op.Variable(String)就可以了，其余的步骤模仿pushOperand(operand: Double)即可。说明一下，变量的创建和入栈过程不需要牵扯到variableValues</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func pushOperand(symbol: String) -&gt; Double? &#123;</span><br><span class="line">    opStack.append(Op.Variable(symbol, 0, nil))</span><br><span class="line">    returnevaluate()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在View Controller中调用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@IBActionfunc appendVariable() &#123;</span><br><span class="line">    displayValue = brain.pushOperand(&quot;M&quot;)</span><br><span class="line">    isMiddleOfTyping = false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>对于设置M的值，就是variableValues[“M”]=5，由于按钮都是在view controller中，这个语句需要在controller中执行，（variableValues是public）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@IBActionfunc setVariableValue() &#123;</span><br><span class="line">    brain.variableValues[&quot;M&quot;] = displayValue</span><br><span class="line">    displayValue = brain.evaluate()</span><br><span class="line">    isMiddleOfTyping = false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在evaluate()中对于每次岀栈的op都进行switch判断，所以需要添加一个处理.Variable类型的case：如果这个op是个变量，那么需要从variableValues中获得该变量的值，如果存在值的话，就返回这个值作为当前的递归结果。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">case .Variable(let symbol, _, _):</span><br><span class="line">    iflet value = variableValues[symbol] &#123;</span><br><span class="line">        return (value, remainingOps)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>5.在用户点击→M按钮后，不仅要完成赋值(e.g. M=3)，还要evaluate()，更新display，这样就能及时看到结果(e.g. 2M+1=7)</p>
+<p>补充内容：对于π的处理</p>
+<p>π当然是常数了，因此加入π按钮后，当作运算数处理即可，但是有个问题：我们可以用3.14代替符号π进行计算返回结果，但是再稍候的输出表达式中我们希望仍然显示3+π=6.14，而不是3+3.14=6.14，因此既需要保留π又需要保留对应的常数值，那么解决方法是：再添加一个Op常数类型，即Op.Constant(String, Double)，这样创建的常数类型既能够保留字符又能够保留常数值，然后在evaluate()方法中添加一个实现处理常数类型的case就好。</p>
+<h4 id="显示计算器输出的步骤"><a href="#显示计算器输出的步骤" class="headerlink" title="显示计算器输出的步骤"></a>显示计算器输出的步骤</h4><p>举例：（左边是用户依次的输入，右侧是计算器屏幕显示的输出）</p>
+<ul>
+<li>一元运算10 cos 显示 cos(10)</li>
+<li>二元运算3 ↲ 5 - 显示3-5 </li>
+<li>常数 π 显示 π</li>
+<li>变量 M 显示 M，即使赋值后M=3，但仍显示M</li>
+<li>一元和二元组合运算 <ul>
+<li>10 √ 3 + 显示 √(10)+3</li>
+<li>3 ↲ 5 + √ 显示 √(3+5)</li>
+<li>3 ↲ 5 ↲ 4 + + 显示3+(5+4) 或者3+5+4 没有多余括号更好（加分项）</li>
+<li>3 ↲ 5 √ + √ 6 ÷ 显示 √(3+ √(5))÷6</li>
+</ul>
+</li>
+<li>在缺少运算数的条件下，显示？，比如3 ↲ ＋显示 ? + 3</li>
+<li>如果栈里面有多个完整独立的表达式，需要全部列出，并且用逗号分开<ul>
+<li>3 ↲ 5 + √ π cos 显示 √(3+5), cos(π) 而且顺序是最近入栈的放在后面</li>
+</ul>
+</li>
+<li>输出的表达式格式必须正确，比如3 ↲ 5 ↲ 4 + x 不能是3x5+4 而必须是3x(5+4). 因为用户先是输入的加法，然后拿5+4的结果再去算的乘法。因此该有括号的地方必须有括号。</li>
+</ul>
+<p>思路：</p>
+<p>实现输入用户每次的运算步骤，需要创建一个describeOpStack()方法，他的实现其实还是像evaluate()方法那样，递归性地调用自身，获取每个栈内的op，如果是运算数类型，例如3，就返回字符“3”；如果是一元运算类型，例如√，就返回“√(op)”，中间的op会通过下次递归获得；如果是二元运算类型，例如＋，就返回“op2+op1”等。只要清楚evaluate()的实现过程，那么实现describeOpStack()就是手到擒来。</p>
+<p>特别注意：</p>
+<ol>
+<li>对于一元运算表达式的输出都默认添加括号，如√(3)，sin(1)</li>
+<li>对于二元运算表达式的输出，比如a+b，可以考虑在b这里添加括号，结果会输出a+(b)，如果a=1,b=2+3，那么输出的表达式即为1+(2+3)，虽然不是很完美吧，但是至少不会出错，最坏的输出结果大不了是1+(2+(3+4))；但如果是axb的情况，且a=2,b=3+4，那么输出为2x3+4，而这里的2+3则必须有括号保护，否则你的计算器输出结果为14，输出表达式却为2x3+4，这就是问题。</li>
+</ol>
+<h4 id="完美解决括号问题"><a href="#完美解决括号问题" class="headerlink" title="完美解决括号问题"></a>完美解决括号问题</h4><p>这款计算器的前身好像是iOS6版的demo，那时候还没有swift，虽然我不清楚有没有人用oc解决这个问题，但是当时我在网上看到有人给出解决方案是：给每次递归返回的二元运算表达式外面都套上括号，比如用户输入 1, 2, 3, +, －，÷，得到的表达式就是(1÷(2-(3+4)))，然后在显示给用户之前，去掉最外层的括号，即最终显示为1÷(2-(3+4))，很好，看上去就是它了。然后清零后再试着输入1, 2, +, 3, +, 4, +, 最终显示为((1+2)+3)+4，嗯，是不是有点多余了。可是没办法，只要输入二元运算，它就给自动添上了括号，属于过于保护，虽然正确显示了运算顺序，但是不够简洁。</p>
+<p>所以完美解决括号问题，就是要尽量减少对二元运算的括号嵌套，但是该有的时候必须得有。</p>
+<p>斯坦福推荐方案：</p>
+<p>给每个Op类型引入一个等级的概念。根据提示，将所有运算数、常数、变量和一元运算全部设为相同的等级；而在二元运算中，对加减法定义较高的等级，对乘除法定义更高的等级。然后在调用describeOpStack()的过程中，每次处理二元运算类型的时候，让该二元运算类型的等级和它左右两边的表达式的等级进行对比，判断是否需要给左边或右边的表达式添加括号。</p>
+<p>我的实现：</p>
+<p>设置运算数、常数、变量和一元运算类型的等级为0，加减法等级为1，乘除法等级为2.其中规定在二元运算中：1. 如果左边或右边的表达式等级小于自身的等级，就给它添加括号（保护弱小），但无需给等级为0的类型添加括号。2: 对右边的表达式总是添加括号，因为它总是先岀栈，先运算，所以需要保护，但无需给等级为0的类型添加括号。</p>
+<p>举例1：</p>
+<p>依次输入1, 2, +, 3, -, 然后开始运算。输出为1+2-3。在此过程中首先岀栈的是减号，减号左边的表达式是1+2，即加法，右边的表达式是3，即常数，那么减号的等级与加法等级一致，所以不用给1+2添加括号，然后3是常数，不用添加括号，最终就是1+2-3。</p>
+<p>然后继续输入4,x, 岀栈后输出为1+2-3x4，那么乘法的左边的表达式最后进行的是减法，右边是常数，而乘法的等级高于减法，因此给左边的表达式添加括号，给予保护。最终会显示为(1+2-3)x4，这样就实现了在同级运算中避免多余的括号，比如(1+2)-3，并且在不同级别的运算中准确地添加括号，保证输出表达式的正确性。</p>
+<p>举例2:</p>
+<p>依次输入1, 2, 3, +, -, 然后运算。输出为1-2+3。在此过程中减法先岀栈，然后是加法。对于减法的实现是两个参数$0,$1，返回$1-$0，因此加法作为$0，于是就是减数，最后的1是被减数。既然加法先岀栈的话，就需要添加括号，所以正确的表达式为1-(2+3)，并且输出结果为-4。如果此时忽略了这里的括号，那么1-2+3怎么能等于-4呢？</p>
+<p>实现：</p>
+<p>利用swift enum的特性，在每个Op类型中都加入一个Int，用整型来表示等级，数值越大，等级越高。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">case Operand(Double, Int)</span><br><span class="line">case UnaryOperation(String, Int, Double -&gt; Double)</span><br><span class="line">case BinaryOperation(String, Int, (Double, Double) -&gt; Double)</span><br><span class="line">case Variable(String, Int)</span><br><span class="line">case Constant(String, Double, Int)</span><br></pre></td></tr></table></figure>
+
+<p>接着在创建这种op的时候，顺便设置等级，比如减法为1级，除法为2级，圆周率为0级，开根运算为0级，变量M为0级等等。唯一的特例是正负号转换运算，虽然将其作为一元运算（默认都带括号），但是对他要特别注意，本来是-5，不要输出像这样-(5)。</p>
+<p>然后创建递归的方法，注意这里需要返回三个参数：结果表达式、等级、运算栈。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private func describeOpStack(ops: [Op]) -&gt; (result: String?, currentPrecedence: Int, remainingOps: [Op])</span><br></pre></td></tr></table></figure>
+
+<p>对一元运算的处理，大多数情况都需要加上括号，如果没有运算值就用<code>？</code>代替</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">case .UnaryOperation(let unarySymbol, let unaryOpPrecedence, _, _):</span><br><span class="line">    let recursivedDescription = describeOpStack(remainingOps)</span><br><span class="line">    var resultString = recursivedDescription.result ?? &quot;?&quot;</span><br><span class="line">    let resultPrecedence = recursivedDescription.currentPrecedence</span><br><span class="line"></span><br><span class="line">    if unaryOpPrecedence &gt; 0 &#123;</span><br><span class="line">        resultString = &quot;\(unarySymbol)(\(resultString))&quot;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        resultString = unarySymbol + resultString // e.g. -5, not -(5)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return (resultString, unaryOpPrecedence, recursivedDescription.remainingOps)</span><br></pre></td></tr></table></figure>
+
+<p>对二元运算的处理，体现了上述的两个规定</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">case .BinaryOperation(let binarySymbol, let binaryOpPrecedence, _, _):</span><br><span class="line">    let recursivedDesc1 = describeOpStack(remainingOps)</span><br><span class="line">    var resultString1 = recursivedDesc1.result ?? &quot;?&quot;</span><br><span class="line">    let resultPrecedence1 = recursivedDesc1.currentPrecedence</span><br><span class="line"></span><br><span class="line">    let recursivedDesc2 = describeOpStack(recursivedDesc1.remainingOps)</span><br><span class="line">    var resultString2 = recursivedDesc2.result ?? &quot;?&quot;</span><br><span class="line">    let resultPrecedence2 = recursivedDesc2.currentPrecedence</span><br><span class="line"></span><br><span class="line">    if resultPrecedence1 != 0 &#123;</span><br><span class="line">        resultString1 = addParentheseToExpression(resultString1) // 规定2</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if binaryOpPrecedence &gt; resultPrecedence2 &amp;&amp; resultPrecedence2 != 0 &#123;</span><br><span class="line">        resultString2 = addParentheseToExpression(resultString2) // 规定1</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return (resultString2 + binarySymbol + resultString1, binaryOpPrecedence, recursivedDesc2.remainingOps)</span><br></pre></td></tr></table></figure>
+
+<p>如果你看的够仔细，会发现unary和binaryOperation为什么带了4个参数位置？定义的时候不是只有String, Int, closure吗？还有一个参数是特别添加来返回错误处理的，在下面的内容中有介绍。由于需要，到后面还得修改Op的类型，在此处不用在意。</p>
+<p>然后在describeOpStack()的实现中，建议直接返回一个含有String的集合。如果此时栈内有[1,2,+,3]，那么调用一次上面的方法只能返回3，而不能够显示1+2，因为递归过程中每次遇到运算数的时候就返回，于是就不会往下进行了。除非在这里设计一个循环，即拿到返回的运算栈如果不会空，说明还有剩余的元素，那就继续调用，知道返回一个空栈为止。然后收集每次获得的表达式结果，最终返回一个数组。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">private func describeOpStack() -&gt; [String] &#123;</span><br><span class="line">    var expressions = [String]()</span><br><span class="line">    var (result, _,  remainingOps) = describeOpStack(opStack)</span><br><span class="line">    </span><br><span class="line">    if result != nil &#123;</span><br><span class="line">        expressions.append(result!)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    while !remainingOps.isEmpty &#123;</span><br><span class="line">        (result, _,  remainingOps) = describeOpStack(remainingOps)</span><br><span class="line">        if result != nil &#123;</span><br><span class="line">            expressions.insert(result!, atIndex: 0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return expressions</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后CalculatorBrain有个description的只读属性（作业要求），能过返回计算器的全部运算表达式，在这里就把所有的表达式列成字符串，用逗号分割显示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var description: String &#123;</span><br><span class="line">    return (describeOpStack() asNSArray).componentsJoinedByString(&quot;, &quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>比如用户输入1，入栈后屏幕显示“1”；再输入2，入栈后显示“1， 2”；再输入＋，入栈后显示“1+2”；再输入3，入栈后显示“1+2, 3”；再输入×，入栈后显示“(1+2)×3”</p>
+<h4 id="撤销优化"><a href="#撤销优化" class="headerlink" title="撤销优化"></a>撤销优化</h4><p>比如目前栈内已有[1,2,+]，然后用户输入56，屏幕计算结果显示“56”，此时56还没有入栈，然后用户点击撤销，显示变为“5”，再撤销变为“0”，再撤销的话按理说还是“0”，不过这里要求是：当屏幕的数字位数撤销为0的时候，接着撤销上一个运算步骤。而上一个运算步骤是+，于是把加法请岀栈，栈内剩下[1,2]，再撤销则把2请岀栈，结果显示2。</p>
+<h4 id="报告错误"><a href="#报告错误" class="headerlink" title="报告错误"></a>报告错误</h4><p>出现任意以下4种错误，需要在屏幕上显示原因。</p>
+<ol>
+<li>对一个负数做开根运算</li>
+<li>除数为0</li>
+<li>运算数不足，如sin(?), ?+3等</li>
+<li>变量没有赋值，如3+a, a=?</li>
+</ol>
+<p>斯坦福推荐：</p>
+<p>在Op类型中再次加入一个closure，传入Double，返回String?，意思是比如除法运算，传入两个参数op1,op2，作为除法需要返回op2/op1的结果，但是作为错误报告就返回 if op1 == 0, return “除数不能为0”的错误信息。</p>
+<p>于是我又一次的修改了Op的结构（当然有不只一种方法，但我在这里选择推荐的方法）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 值, 等级</span><br><span class="line">case Operand(Double, Int) </span><br><span class="line">// 运算号, 等级, 错误输出, 运算方法</span><br><span class="line">case UnaryOperation(String, Int, (Double -&gt; String?)?, Double -&gt; Double) </span><br><span class="line">// 运算号, 等级, 错误输出, 运算方法</span><br><span class="line">case BinaryOperation(String, Int, ((Double, Double) -&gt; String?)?, (Double, Double) -&gt; Double) </span><br><span class="line">// 变量标记, 等级, 错误输出</span><br><span class="line">case Variable(String, Int, String?) </span><br><span class="line">// 常数标记, 常数值, 等级</span><br><span class="line">case Constant(String, Double, Int)</span><br></pre></td></tr></table></figure>
+
+<p>创建除法，如果除数为0就返回提示错误</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Op.BinaryOperation(&quot;÷&quot;, 2, (&#123; op1, op2 inreturn op1 == 0 ? &quot;❌ dividend&quot; : nil &#125;)) &#123; $1 / $0 &#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建开根运算，如果参数为负数就返回错误提示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Op.UnaryOperation(&quot;√&quot;, 0, (&#123; return $0 &lt; 0 ? &quot;❌ √(n&gt;0)&quot; : nil &#125;), sqrt)</span><br></pre></td></tr></table></figure>
+
+<p>由于错误输出类型为Optional，因此不需要的时候可以赋值为nil，比如加法就不需要</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Op.BinaryOperation(&quot;+&quot;, 1, nil, +)</span><br></pre></td></tr></table></figure>
+
+<p>创建evaluateAndReportErrors()，实现方法基本类似于原来的evaluate()，唯一区别是前者需要返回错误报告。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">func evaluateAndReportErrors() -&gt; String &#123;</span><br><span class="line">    let (result, errorMsg, remainingStack) = evaluateAndReportErrors(opStack)</span><br><span class="line">    return errorMsg ?? (result != nil ? &quot;\(result!)&quot; : &quot;?&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意原来的evaluate()返回的是Double?，那么这里直接返回String，如果出现错误，就直接输出错误原因；如果没有错误，就返回运算结果。在作业文档中，最后一条特别建议错误的反馈方由Model承担，而Controller的责任是将得到的错误信息通过View来展示给用户。于是作为Model的evaluateAndReportErrors()就很好的封装了这部分信息，不管返回的结果是什么，Controller只需要接受、处理、并展示就好。因此，调用上面这个方法的话，就需要回到View Controller对其展示的API稍作修改即可。既然在作业文档中Required Tasks的第二条明确规定不让修改CalculatorBrain中之前做好的任何公开的API的话，那就意味着不可以修改pushOperand(), performOperation()等，也就是说不能替换里面原有的evaluate()方法。</p>
+<p>然后创建一个错误反馈的递归方法，返回运算结果、错误提示、剩余运算栈</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private func evaluateAndReportErrors(ops: [Op]) -&gt; (result: Double?, errorMessage: String?, remainingOps: [Op])</span><br></pre></td></tr></table></figure>
+
+<p>写到这里，凡是该类的递归方法，实现起来几乎一模一样了，掌握一个就可以基本通吃。其中需要处理运算方法出现的错误，下面一元运算这里，比如是个开根运算，如果传个-5进来，failureDescription就得到了错误信息，然后就接着传递下去。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">case .UnaryOperation(_, _, let errorTest, let unaryOperation):</span><br><span class="line">    let evaluation = evaluate(remainingOps)</span><br><span class="line">    if let operand = evaluation.result &#123;</span><br><span class="line">        // error report e.g. √(-5)</span><br><span class="line">        let failureDescription = errorTest?(operand)</span><br><span class="line">        return (unaryOperation(operand), failureDescription, evaluation.remainingOps)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>作为二元运算，就是报告类似除数为0或者缺少运算数之类的错误</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">case .BinaryOperation(_, _, var errorTest, let binaryOperation):</span><br><span class="line">    let evaluation1 = evaluate(remainingOps)</span><br><span class="line">    if let operand1 = evaluation1.result &#123;</span><br><span class="line">        let evaluation2 = evaluate(evaluation1.remainingOps)</span><br><span class="line">        if let operand2 = evaluation2.result &#123;</span><br><span class="line">            // error report e.g. 2 / 0</span><br><span class="line">            let failureDescription = errorTest?(operand1, operand2)</span><br><span class="line">            return (binaryOperation(operand1, operand2), failureDescription, evaluation2.remainingOps)</span><br><span class="line">        &#125; else &#123; return (nil, &quot;op2❓&quot;, evaluation2.remainingOps) &#125; // error report</span><br><span class="line">    &#125; else &#123; return (nil, &quot;op1❓&quot;, evaluation1.remainingOps) &#125; // error report</span><br></pre></td></tr></table></figure>
+
+<p>关于斯坦福计算器的主要内容基本完结了，接下来就等下一次作业，像Paul在课上说得那样，把它拓展成为一个图形计算器。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.skywander.cn/cs193p-ios8-cal2/" data-id="ck2hbe6z5003cz1jbdcohd1kp" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/swift/" rel="tag">swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/cs193p-ios8-cal3/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          斯坦福CS193p-iOS8课程作业之计算器3
+        
+      </div>
+    </a>
+  
+  
+    <a href="/cs193p-ios8-cal1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">斯坦福CS193p-iOS8课程作业之计算器1</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Networking/" rel="tag">Networking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/UICollectionView/" rel="tag">UICollectionView</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cs193p/" rel="tag">cs193p</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ios/" rel="tag">ios</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/objc/" rel="tag">objc</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/swift/" rel="tag">swift</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web/" rel="tag">web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xcode/" rel="tag">xcode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6/" rel="tag">读书</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag">项目总结</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Networking/" style="font-size: 10px;">Networking</a> <a href="/tags/UICollectionView/" style="font-size: 10px;">UICollectionView</a> <a href="/tags/cs193p/" style="font-size: 16px;">cs193p</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/ios/" style="font-size: 20px;">ios</a> <a href="/tags/mysql/" style="font-size: 12px;">mysql</a> <a href="/tags/objc/" style="font-size: 14px;">objc</a> <a href="/tags/swift/" style="font-size: 18px;">swift</a> <a href="/tags/web/" style="font-size: 12px;">web</a> <a href="/tags/xcode/" style="font-size: 10px;">xcode</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 10px;">算法</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 10px;">读书</a> <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" style="font-size: 12px;">项目总结</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">七月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">五月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">三月 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/02/">二月 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Alamofire4/">Alamofire 4</a>
+          </li>
+        
+          <li>
+            <a href="/binary-search-for-UICollectionViewLayout/">使用二分搜索来提速UICollectionView</a>
+          </li>
+        
+          <li>
+            <a href="/UICollectionViewLeftAlignedFlexibleLayout/">通过中文布局来学习UICollectionViewLayout</a>
+          </li>
+        
+          <li>
+            <a href="/git-guru/">成为一名git大师</a>
+          </li>
+        
+          <li>
+            <a href="/ios-swizzling/">记一次方法交换崩溃的故事</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 黄琨(Jack Huang)<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
